@@ -128,6 +128,7 @@ local function fetchPlayerEntity(citizenId)
     } or nil
 end
 
+--- TODO: remove?
 ---@param filters table<string, any>
 local function handleSearchFilters(filters)
     if not (filters) then return '', {} end
@@ -233,135 +234,6 @@ local function fetchIsUnique(type, value)
     return result.count == 0
 end
 
----@param citizenid string
----@param type GroupType type
----@param group string
----@param grade integer
-local function addToGroup(citizenid, type, group, grade)
-    MySQL.insert('INSERT INTO player_groups (citizenid, type, `group`, grade) VALUES (:citizenid, :type, :group, :grade) ON DUPLICATE KEY UPDATE grade = :grade', {
-        citizenid = citizenid,
-        type = type,
-        group = group,
-        grade = grade,
-    })
-end
-
----@param citizenid string
----@param group string
----@param grade integer
-local function addPlayerToJob(citizenid, group, grade)
-    addToGroup(citizenid, GroupType.JOB, group, grade)
-end
-
----@param citizenid string
----@param group string
----@param grade integer
-local function addPlayerToGang(citizenid, group, grade)
-    addToGroup(citizenid, GroupType.GANG, group, grade)
-end
-
----@param citizenid string
----@return table<string, integer> jobs
----@return table<string, integer> gangs
-local function fetchPlayerGroups(citizenid)
-    local groups = MySQL.query.await('SELECT `group`, type, grade FROM player_groups WHERE citizenid = ?', {citizenid})
-    local jobs = {}
-    local gangs = {}
-    for i = 1, #groups do
-        local group = groups[i]
-        local validGroup = group.type == GroupType.JOB and GetJob(group.group) or GetGang(group.group)
-        if not validGroup then
-            lib.print.warn(('Invalid group %s found in player_groups table, Does it exist in shared/%ss.lua?'):format(group.group, group.type))
-        elseif not validGroup.grades?[group.grade] then
-            lib.print.warn(('Invalid grade %s found in player_groups table for %s %s, Does it exist in shared/%ss.lua?'):format(group.grade, group.type, group.group, group.type))
-        elseif group.type == GroupType.JOB then
-            jobs[group.group] = group.grade
-        elseif group.type == GroupType.GANG then
-            gangs[group.group] = group.grade
-        end
-    end
-    return jobs, gangs
-end
-
----@param group string
----@param type GroupType
----@return table<string, integer> players
-local function fetchGroupMembers(group, type)
-    return MySQL.query.await("SELECT citizenid, grade FROM player_groups WHERE `group` = ? AND `type` = ?", {group, type})
-end
-
----@param citizenid string
----@param type GroupType
----@param group string
-local function removeFromGroup(citizenid, type, group)
-    MySQL.query.await('DELETE FROM player_groups WHERE citizenid = ? AND type = ? AND `group` = ?', {citizenid, type, group})
-end
-
----@param citizenid string
----@param group string
-local function removePlayerFromJob(citizenid, group)
-    removeFromGroup(citizenid, GroupType.JOB, group)
-end
-
----@param citizenid string
----@param group string
-local function removePlayerFromGang(citizenid, group)
-    removeFromGroup(citizenid, GroupType.GANG, group)
-end
-
----Copies player's primary job/gang to the player_groups table. Works for online/offline players.
----Idempotent
-RegisterCommand('convertjobs', function(source)
-	if source ~= 0 then return warn('This command can only be executed using the server console.') end
-
-    local players = MySQL.query.await('SELECT citizenid, JSON_VALUE(job, \'$.name\') AS jobName, JSON_VALUE(job, \'$.grade.level\') AS jobGrade, JSON_VALUE(gang, \'$.name\') AS gangName, JSON_VALUE(gang, \'$.grade.level\') AS gangGrade FROM players')
-    for i = 1, #players do
-        local player = players[i]
-        local success, err = pcall(AddPlayerToJob, player.citizenid, player.jobName, tonumber(player.jobGrade))
-        if not success then lib.print.error(err) end
-        success, err = pcall(AddPlayerToGang, player.citizenid, player.gangName, tonumber(player.gangGrade))
-        if not success then lib.print.error(err) end
-    end
-
-    lib.print.info('Converted jobs and gangs successfully')
-    TriggerEvent('qbx_core:server:jobsconverted')
-end, true)
-
----Removes invalid groups from the player_groups table.
-local function cleanPlayerGroups()
-    local groups = MySQL.query.await('SELECT DISTINCT `group`, type, grade FROM player_groups')
-    for i = 1, #groups do
-        local group = groups[i]
-        local validGroup = group.type == GroupType.JOB and GetJob(group.group) or GetGang(group.group)
-        if not validGroup then
-            MySQL.query.await('DELETE FROM player_groups WHERE `group` = ? AND type = ?', {group.group, group.type})
-            lib.print.info(('Remove invalid %s %s from player_groups table'):format(group.type, group.group))
-        elseif not validGroup.grades?[group.grade] then
-            MySQL.query.await('DELETE FROM player_groups WHERE `group` = ? AND type = ? AND grade = ?', {group.group, group.type, group.grade})
-            lib.print.info(('Remove invalid %s %s grade %s from player_groups table'):format(group.type, group.group, group.grade))
-        end
-    end
-
-    lib.print.info('Removed invalid groups from player_groups table')
-end
-
-RegisterCommand('cleanplayergroups', function(source)
-	if source ~= 0 then return warn('This command can only be executed using the server console.') end
-    cleanPlayerGroups()
-end, true)
-
-CreateThread(function()
-    for _, data in pairs(characterDataTables) do
-        local tableName = data[1]
-        if not doesTableExist(tableName) then
-            warn(('Table \'%s\' does not exist in database, please remove it from qbx_core/config/server.lua or create the table'):format(tableName))
-        end
-    end
-    if GetConvar('qbx:cleanPlayerGroups', 'false') == 'true' then
-        cleanPlayerGroups()
-    end
-end)
-
 return {
     insertBan = insertBan,
     fetchBan = fetchBan,
@@ -372,11 +244,5 @@ return {
     fetchAllPlayerEntities = fetchAllPlayerEntities,
     deletePlayer = deletePlayer,
     fetchIsUnique = fetchIsUnique,
-    addPlayerToJob = addPlayerToJob,
-    addPlayerToGang = addPlayerToGang,
-    fetchPlayerGroups = fetchPlayerGroups,
-    fetchGroupMembers = fetchGroupMembers,
-    removePlayerFromJob = removePlayerFromJob,
-    removePlayerFromGang = removePlayerFromGang,
     searchPlayerEntities = searchPlayerEntities,
 }

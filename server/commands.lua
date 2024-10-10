@@ -250,61 +250,6 @@ lib.addCommand('setjob', {
     assert(success, json.encode(errorResult))
 end)
 
-lib.addCommand('changejob', {
-    help = locale('command.changejob.help'),
-    params = {
-        { name = locale('command.changejob.params.id.name'), help = locale('command.changejob.params.id.help'), type = 'playerId' },
-        { name = locale('command.changejob.params.job.name'), help = locale('command.changejob.params.job.help'), type = 'string' },
-    },
-    restricted = 'group.admin'
-}, function(source, args)
-    local player = GetPlayer(args[locale('command.changejob.params.id.name')])
-    if not player then
-        Notify(source, locale('error.not_online'), 'error')
-        return
-    end
-
-    local success, errorResult = SetPlayerPrimaryJob(player.PlayerData.citizenid, args[locale('command.changejob.params.job.name')])
-    assert(success, json.encode(errorResult))
-end)
-
-lib.addCommand('addjob', {
-    help = locale('command.addjob.help'),
-    params = {
-        { name = locale('command.addjob.params.id.name'), help = locale('command.addjob.params.id.help'), type = 'playerId' },
-        { name = locale('command.addjob.params.job.name'), help = locale('command.addjob.params.job.help'), type = 'string' },
-        { name = locale('command.addjob.params.grade.name'), help = locale('command.addjob.params.grade.help'), type = 'number', optional = true}
-    },
-    restricted = 'group.admin'
-}, function(source, args)
-    local player = GetPlayer(args[locale('command.addjob.params.id.name')])
-    if not player then
-        Notify(source, locale('error.not_online'), 'error')
-        return
-    end
-
-    local success, errorResult = AddPlayerToJob(player.PlayerData.citizenid, args[locale('command.addjob.params.job.name')], args[locale('command.addjob.params.grade.name')] or 0)
-    assert(success, json.encode(errorResult))
-end)
-
-lib.addCommand('removejob', {
-    help = locale('command.removejob.help'),
-    params = {
-        { name = locale('command.removejob.params.id.name'), help = locale('command.removejob.params.id.help'), type = 'playerId' },
-        { name = locale('command.removejob.params.job.name'), help = locale('command.removejob.params.job.help'), type = 'string' }
-    },
-    restricted = 'group.admin'
-}, function(source, args)
-    local player = GetPlayer(args[locale('command.removejob.params.id.name')])
-    if not player then
-        Notify(source, locale('error.not_online'), 'error')
-        return
-    end
-
-    local success, errorResult = RemovePlayerFromJob(player.PlayerData.citizenid, args[locale('command.removejob.params.job.name')])
-    assert(success, json.encode(errorResult))
-end)
-
 lib.addCommand('gang', {
     help = locale('command.gang.help')
 }, function(source)

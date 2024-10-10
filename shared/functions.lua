@@ -26,6 +26,7 @@
 ---@param playerData table
 ---@param primary? boolean Check only for primary job/gang
 ---@return boolean
+---TODO: figure out wtf that is and how to make it not retarded
 function HasPlayerGotGroup(filter, playerData, primary)
     local groups = not primary and GetPlayerGroups(playerData)
     if not filter then return false end
@@ -69,23 +70,4 @@ function HasPlayerGotGroup(filter, playerData, primary)
         end
     end
     return false
-end
-
----@param playerData PlayerData
----@return table<string, integer> playerGroups
-function GetPlayerGroups(playerData)
-    local groups = {}
-    for job, data in pairs(playerData.jobs) do
-        if not groups[job] then
-            groups[job] = data
-        end
-    end
-    for gang, data in pairs(playerData.gangs) do
-        if not groups[gang] then
-            groups[gang] = data
-        else
-            lib.print.warn(('Duplicate group name %s found in player_groups table, check job and gang shared lua.'):format(gang))
-        end
-    end
-    return groups
 end

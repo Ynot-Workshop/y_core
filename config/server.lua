@@ -59,6 +59,7 @@ return {
     ---@alias TableName string
     ---@alias ColumnName string
     ---@type [TableName, ColumnName][]
+    ---TODO: remove that whole thing, a good db just cascades
     characterDataTables = {
         {'properties', 'owner'},
         {'bank_accounts_new', 'id'},
@@ -66,7 +67,6 @@ return {
         {'player_mails', 'citizenid'},
         {'player_outfits', 'citizenid'},
         {'player_vehicles', 'citizenid'},
-        {'player_groups', 'citizenid'},
         {'players', 'citizenid'},
         {'npwd_calls', 'identifier'},
         {'npwd_darkchat_channel_members', 'user_identifier'},
