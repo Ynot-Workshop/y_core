@@ -21,7 +21,7 @@ jobs:
 
             - name: Bundle files
               run: |
-                rm -rf ./.github ./.vscode ./.git
+                rm -rf ./.github ./.git
                 shopt -s extglob
                 mkdir ./${{ github.event.repository.name }}
                 cp -r !(${{ github.event.repository.name }}) ${{ github.event.repository.name }}
