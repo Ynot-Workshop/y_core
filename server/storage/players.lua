@@ -1,6 +1,41 @@
 local defaultSpawn = require 'config.shared'.defaultSpawn
 local characterDataTables = require 'config.server'.characterDataTables
 
+local function createUsersTable()
+    MySQL.query([[
+        CREATE TABLE IF NOT EXISTS `users` (
+            `userId` int UNSIGNED NOT NULL AUTO_INCREMENT,
+            `username` varchar(255) DEFAULT NULL,
+            `license` varchar(50) DEFAULT NULL,
+            `license2` varchar(50) DEFAULT NULL,
+            `fivem` varchar(20) DEFAULT NULL,
+            `discord` varchar(30) DEFAULT NULL,
+            PRIMARY KEY (`userId`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+end
+
+---@param identifiers table<PlayerIdentifier, string>
+---@return number?
+local function createUser(identifiers)
+    return MySQL.insert.await('INSERT INTO users (username, license, license2, fivem, discord) VALUES (?, ?, ?, ?, ?)', {
+        identifiers.username,
+        identifiers.license,
+        identifiers.license2,
+        identifiers.fivem,
+        identifiers.discord,
+    })
+end
+
+---@param identifier string
+---@return number?
+local function fetchUserByIdentifier(identifier)
+    local idType = identifier:match('([^:]+)')
+    local select = ('SELECT `userId` FROM `users` WHERE `%s` = ? LIMIT 1'):format(idType)
+
+    return MySQL.scalar.await(select, { identifier })
+end
+
 ---@param request InsertBanRequest
 ---@return boolean success
 ---@return ErrorResult? errorResult
@@ -112,7 +147,7 @@ end
 local function fetchPlayerEntity(citizenId)
     ---@type PlayerEntityDatabase
     local player = MySQL.single.await('SELECT citizenid, license, name, charinfo, money, job, gang, position, metadata, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players WHERE citizenid = ?', { citizenId })
-    local charinfo = json.decode(player.charinfo)
+    local charinfo = player and json.decode(player.charinfo)
     return player and {
         citizenid = player.citizenid,
         license = player.license,
@@ -167,7 +202,7 @@ local function handleSearchFilters(filters)
             end
         end
     end
-    return string.format(' WHERE %s', table.concat(clauses, ' AND ')), holders
+    return (' WHERE %s'):format(table.concat(clauses, ' AND ')), holders
 end
 
 ---@param filters table <string, any>
@@ -234,6 +269,9 @@ local function fetchIsUnique(type, value)
 end
 
 return {
+    createUsersTable = createUsersTable,
+    createUser = createUser,
+    fetchUserByIdentifier = fetchUserByIdentifier,
     insertBan = insertBan,
     fetchBan = fetchBan,
     deleteBan = deleteBan,

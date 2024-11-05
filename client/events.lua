@@ -8,6 +8,10 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         NetworkSetFriendlyFireOption(true)
     end
 
+    if NetworkIsInTutorialSession() then
+        NetworkEndTutorialSession()
+    end
+
     local motd = GetConvar('qbx:motd', '')
     if motd ~= '' then
         exports.chat:addMessage({ template = motd })
@@ -17,7 +21,7 @@ end)
 ---@param val PlayerData
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
     local invokingResource = GetInvokingResource()
-    if invokingResource and invokingResource ~= GetCurrentResourceName() then return end
+    if invokingResource and invokingResource ~= cache.resource then return end
     QBX.PlayerData = val
 end)
 

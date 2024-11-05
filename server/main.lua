@@ -25,7 +25,6 @@ SetRoutingBucketEntityLockdownMode(0, bucketLockDownMode)
 QBX = {}
 QBX.Shared = require 'shared.main'
 
----@alias Source integer
 ---@type table<Source, Player>
 QBX.Players = {}
 GlobalState.PlayerCount = 0
@@ -114,7 +113,7 @@ exports('GetVehiclesByHash', GetVehiclesByHash)
 
 ---@return table<string, Vehicle[]>
 function GetVehiclesByCategory()
-	return qbx.table.mapBySubfield(QBX.Shared.Vehicles, 'category')
+    return qbx.table.mapBySubfield(QBX.Shared.Vehicles, 'category')
 end
 
 exports('GetVehiclesByCategory', GetVehiclesByCategory)
