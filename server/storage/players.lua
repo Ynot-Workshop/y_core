@@ -226,7 +226,6 @@ local function fetchIsUnique(type, value)
         AccountNumber = "JSON_VALUE(charinfo, '$.account')",
         PhoneNumber = "JSON_VALUE(charinfo, '$.phone')",
         FingerId = "JSON_VALUE(metadata, '$.fingerprint')",
-        WalletId = "JSON_VALUE(metadata, '$.walletid')",
         SerialNumber = "JSON_VALUE(metadata, '$.phonedata.SerialNumber')",
     }
 

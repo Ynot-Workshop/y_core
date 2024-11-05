@@ -127,26 +127,10 @@ function CheckPlayerData(source, playerData)
 
     playerData.metadata.callsign = playerData.metadata.callsign or 'NO CALLSIGN'
     playerData.metadata.fingerprint = playerData.metadata.fingerprint or GenerateUniqueIdentifier('FingerId')
-    playerData.metadata.walletid = playerData.metadata.walletid or GenerateUniqueIdentifier('WalletId')
-    playerData.metadata.criminalrecord = playerData.metadata.criminalrecord or {
-        hasRecord = false,
-        date = nil
-    }
     playerData.metadata.licences = playerData.metadata.licences or {
         id = true,
-        driver = true,
+        driver = false,
         weapon = false,
-    }
-    playerData.metadata.inside = playerData.metadata.inside or {
-        house = nil,
-        apartment = {
-            apartmentType = nil,
-            apartmentId = nil,
-        }
-    }
-    playerData.metadata.phonedata = playerData.metadata.phonedata or {
-        SerialNumber = GenerateUniqueIdentifier('SerialNumber'),
-        InstalledApps = {},
     }
 
     if playerData.job and playerData.job.name and not QBX.Shared.Jobs[playerData.job.name] then playerData.job = nil end

@@ -20,7 +20,7 @@ return {
             'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-',
         },
 
-        ---@alias UniqueIdType 'citizenid' | 'AccountNumber' | 'PhoneNumber' | 'FingerId' | 'WalletId' | 'SerialNumber'
+        ---@alias UniqueIdType 'citizenid' | 'AccountNumber' | 'PhoneNumber' | 'FingerId' | 'SerialNumber'
         ---@type table<UniqueIdType, {valueFunction: function}>
         identifierTypes = {
             citizenid = {
@@ -41,11 +41,6 @@ return {
             FingerId = {
                 valueFunction = function()
                     return lib.string.random('...............')
-                end,
-            },
-            WalletId = {
-                valueFunction = function()
-                    return 'QB-' .. math.random(11111111, 99999999)
                 end,
             },
             SerialNumber = {
