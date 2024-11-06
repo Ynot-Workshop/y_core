@@ -209,12 +209,11 @@ end
 
 exports('CanUseItem', CanUseItem)
 
--- Check if player is whitelisted, kept like this for backwards compatibility or future plans
+---@deprecated
 ---@param source Source
 ---@return boolean
+--- TODO: tx exports?
 function IsWhitelisted(source)
-    if not serverConfig.whitelist then return true end
-    if IsPlayerAceAllowed(source --[[@as string]], serverConfig.whitelistPermission) then return true end
     return false
 end
 
@@ -335,35 +334,12 @@ end
 
 exports('ToggleOptin', ToggleOptin)
 
--- Check if player is banned
+---@deprecated
 ---@param source Source
 ---@return boolean
 ---@return string? playerMessage
+---TODO: tx exports?
 function IsPlayerBanned(source)
-    local license = GetPlayerIdentifierByType(source --[[@as string]], 'license')
-    local license2 = GetPlayerIdentifierByType(source --[[@as string]], 'license2')
-    local result = license2 and storage.fetchBan({ license = license2 })
-
-    if not result then
-        result = storage.fetchBan({ license = license })
-    end
-
-    if not result then return false end
-
-    if os.time() < result.expire then
-        local timeTable = os.date('*t', tonumber(result.expire))
-
-        return true, ('You have been banned from the server:\n%s\nYour ban expires in %s/%s/%s %s:%s\n'):format(result.reason, timeTable.day, timeTable.month, timeTable.year, timeTable.hour, timeTable.min)
-    else
-        CreateThread(function()
-            if license2 then
-                storage.deleteBan({ license = license2 })
-            end
-
-            storage.deleteBan({ license = license })
-        end)
-    end
-
     return false
 end
 
@@ -413,19 +389,14 @@ exports('GetCoreVersion', GetCoreVersion)
 
 ---@param playerId Source server id
 ---@param origin string reason
+---TODO: txadmin exports when?
 local function ExploitBan(playerId, origin)
     local name = GetPlayerName(playerId)
-    local success, errorResult = storage.insertBan({
-        name = name,
-        license = GetPlayerIdentifierByType(playerId --[[@as string]], 'license2') or GetPlayerIdentifierByType(playerId --[[@as string]], 'license'),
-        discordId = GetPlayerIdentifierByType(playerId --[[@as string]], 'discord'),
-        ip = GetPlayerIdentifierByType(playerId --[[@as string]], 'ip'),
-        reason = origin,
-        expiration = 2147483647,
-        bannedBy = 'Anti Cheat'
-    })
+
+    return false
+--[[
     if not success then lib.print.error(errorResult) end
-    DropPlayer(playerId --[[@as string]], locale('info.exploit_banned', serverConfig.discord))
+    DropPlayer(playerId, locale('info.exploit_banned', serverConfig.discord))
     logger.log({
         source = 'qbx_core',
         webhook = loggingConfig.webhook['anticheat'],
@@ -434,6 +405,7 @@ local function ExploitBan(playerId, origin)
         tags = loggingConfig.role,
         message = success and ('%s has been kicked and banned for exploiting %s'):format(name, origin) or ('%s has been kicked for exploiting %s, ban insert failed'):format(name, origin)
     })
+ ]]
 end
 
 exports('ExploitBan', ExploitBan)

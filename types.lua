@@ -61,9 +61,6 @@
 ---@field Logout fun()
 
 ---@class StorageFunctions
----@field insertBan fun(request: InsertBanRequest)
----@field fetchBan fun(request: GetBanRequest): BanEntity?
----@field deleteBan fun(request: GetBanRequest)
 ---@field upsertPlayerEntity fun(request: UpsertPlayerRequest)
 ---@field fetchPlayerSkin fun(citizenId: string): PlayerSkin?
 ---@field fetchPlayerEntity fun(citizenId: string): PlayerEntity?
@@ -71,24 +68,6 @@
 ---@field fetchAllPlayerEntities fun(license2: string, license?: string): PlayerEntity[]
 ---@field deletePlayer fun(citizenId: string): boolean success
 ---@field fetchIsUnique fun(type: UniqueIdType, value: string|number): boolean
-
----@class InsertBanRequest
----@field name string
----@field license? string
----@field discordId? string
----@field ip? string
----@field reason string
----@field bannedBy string
----@field expiration integer epoch second that the ban will expire
-
----@class GetBanRequest
----@field license? string
----@field discordId? string
----@field ip? string
-
----@class BanEntity
----@field expire integer epoch second that the ban will expire
----@field reason string
 
 ---@class UpsertPlayerRequest
 ---@field playerEntity PlayerEntity

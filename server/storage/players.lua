@@ -36,61 +36,6 @@ local function fetchUserByIdentifier(identifier)
     return MySQL.scalar.await(select, { identifier })
 end
 
----@param request InsertBanRequest
----@return boolean success
----@return ErrorResult? errorResult
-local function insertBan(request)
-    if not request.discordId and not request.ip and not request.license then
-        return false, {
-            code = 'no_identifier',
-            message = 'discordId, ip, or license required in the ban request'
-        }
-    end
-
-    MySQL.insert.await('INSERT INTO bans (name, license, discord, ip, reason, expire, bannedby) VALUES (?, ?, ?, ?, ?, ?, ?)', {
-        request.name,
-        request.license,
-        request.discordId,
-        request.ip,
-        request.reason,
-        request.expiration,
-        request.bannedBy,
-    })
-    return true
-end
-
----@param request GetBanRequest
----@return string column in storage
----@return string value of the id
-local function getBanId(request)
-    if request.license then
-        return 'license', request.license
-    elseif request.discordId then
-        return 'discord', request.discordId
-    elseif request.ip then
-        return 'ip', request.ip
-    else
-        error('no identifier provided', 2)
-    end
-end
-
----@param request GetBanRequest
----@return BanEntity?
-local function fetchBan(request)
-    local column, value = getBanId(request)
-    local result = MySQL.single.await('SELECT expire, reason FROM bans WHERE ' ..column.. ' = ?', { value })
-    return result and {
-        expire = result.expire,
-        reason = result.reason,
-    } or nil
-end
-
----@param request GetBanRequest
-local function deleteBan(request)
-    local column, value = getBanId(request)
-    MySQL.query.await('DELETE FROM bans WHERE ' ..column.. ' = ?', { value })
-end
-
 ---@param request UpsertPlayerRequest
 local function upsertPlayerEntity(request)
     MySQL.insert.await('INSERT INTO players (citizenid, cid, license, name, money, charinfo, job, gang, position, metadata, last_logged_out) VALUES (:citizenid, :cid, :license, :name, :money, :charinfo, :job, :gang, :position, :metadata, :last_logged_out) ON DUPLICATE KEY UPDATE name = :name, money = :money, charinfo = :charinfo, job = :job, gang = :gang, position = :position, metadata = :metadata, last_logged_out = :last_logged_out', {
@@ -272,9 +217,6 @@ return {
     createUsersTable = createUsersTable,
     createUser = createUser,
     fetchUserByIdentifier = fetchUserByIdentifier,
-    insertBan = insertBan,
-    fetchBan = fetchBan,
-    deleteBan = deleteBan,
     upsertPlayerEntity = upsertPlayerEntity,
     fetchPlayerSkin = fetchPlayerSkin,
     fetchPlayerEntity = fetchPlayerEntity,

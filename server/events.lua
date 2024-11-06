@@ -75,6 +75,7 @@ end
 ---@param name string
 ---@param _ any
 ---@param deferrals Deferrals
+--- TODO: needs testing
 local function onPlayerConnecting(name, _, deferrals)
     local src = source --[[@as string]]
     local license = GetPlayerIdentifierByType(src, 'license2') or GetPlayerIdentifierByType(src, 'license')
@@ -104,64 +105,17 @@ local function onPlayerConnecting(name, _, deferrals)
         storage.createUser(identifiers)
     end
 
-    local databaseTime = os.clock()
-    local databasePromise = promise.new()
+    deferrals.update(locale('info.join_server', name, serverName))
 
-    -- conduct database-dependant checks
-    CreateThread(function()
-        deferrals.update(locale('info.checking_ban', name))
-        local success, err = pcall(function()
-            local isBanned, Reason = IsPlayerBanned(src --[[@as Source]])
-            if isBanned then
-                Wait(0) -- Mandatory wait
-                deferrals.done(Reason)
-            end
-        end)
+    -- Mandatory wait
+    Wait(0)
 
-        if serverConfig.whitelist and success then
-            deferrals.update(locale('info.checking_whitelisted', name))
-            success, err = pcall(function()
-                if not IsWhitelisted(src --[[@as Source]]) then
-                    Wait(0) -- Mandatory wait
-                    deferrals.done(locale('error.not_whitelisted'))
-                end
-            end)
-        end
-
-        if not success then
-            databasePromise:reject(err)
-        end
-        databasePromise:resolve()
-    end)
-
-    local onError = function(err)
-        deferrals.done(locale('error.connecting_error'))
-        lib.print.error(err)
+    if queue then
+        queue.awaitPlayerQueue(src --[[@as Source]], license, deferrals)
+    else
+        deferrals.done()
     end
 
-    -- wait for database to finish
-    databasePromise:next(function()
-        deferrals.update(locale('info.join_server', name, serverName))
-
-        -- Mandatory wait
-        Wait(0)
-
-        if queue then
-            queue.awaitPlayerQueue(src --[[@as Source]], license, deferrals)
-        else
-            deferrals.done()
-        end
-    end, onError):next(function() end, onError)
-
-    -- if conducting db checks for too long then raise error
-    while databasePromise.state == 0 do
-        if os.clock() - databaseTime > 30 then
-            deferrals.done(locale('error.connecting_database_timeout'))
-            error(locale('error.connecting_database_timeout'))
-            break
-        end
-        Wait(1000)
-    end
 
     -- Add any additional defferals you may need!
 end
