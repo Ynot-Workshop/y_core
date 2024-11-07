@@ -311,9 +311,8 @@ local function spawnLastLocation()
     end
 end
 
----@param cid integer
 ---@return boolean
-local function createCharacter(cid)
+local function createCharacter()
     previewPed()
 
     :: noMatch ::
@@ -337,7 +336,6 @@ local function createCharacter(cid)
         nationality = capString(dialog[3]),
         gender = dialog[4] == locale('info.char_male') and 0 or 1,
         birthdate = dialog[5],
-        cid = cid
     })
 
     if GetResourceState('qbx_spawn') == 'missing' then

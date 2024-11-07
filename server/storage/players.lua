@@ -38,9 +38,8 @@ end
 
 ---@param request UpsertPlayerRequest
 local function upsertPlayerEntity(request)
-    MySQL.insert.await('INSERT INTO players (citizenid, cid, license, name, money, charinfo, job, gang, position, metadata, last_logged_out) VALUES (:citizenid, :cid, :license, :name, :money, :charinfo, :job, :gang, :position, :metadata, :last_logged_out) ON DUPLICATE KEY UPDATE name = :name, money = :money, charinfo = :charinfo, job = :job, gang = :gang, position = :position, metadata = :metadata, last_logged_out = :last_logged_out', {
+    MySQL.insert.await('INSERT INTO players (citizenid, license, name, money, charinfo, job, gang, position, metadata, last_logged_out) VALUES (:citizenid, :license, :name, :money, :charinfo, :job, :gang, :position, :metadata, :last_logged_out) ON DUPLICATE KEY UPDATE name = :name, money = :money, charinfo = :charinfo, job = :job, gang = :gang, position = :position, metadata = :metadata, last_logged_out = :last_logged_out', {
         citizenid = request.playerEntity.citizenid,
-        cid = request.playerEntity.charinfo.cid,
         license = request.playerEntity.license,
         name = request.playerEntity.name,
         money = json.encode(request.playerEntity.money),
@@ -72,7 +71,7 @@ local function fetchAllPlayerEntities(license2, license)
     ---@type PlayerEntity[]
     local chars = {}
     ---@type PlayerEntityDatabase[]
-    local result = MySQL.query.await('SELECT citizenid, charinfo, money, job, gang, position, metadata, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players WHERE license = ? OR license = ? ORDER BY cid', {license, license2})
+    local result = MySQL.query.await('SELECT citizenid, charinfo, money, job, gang, position, metadata, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players WHERE license = ? OR license = ? ORDER BY citizenid', {license, license2})
     for i = 1, #result do
         chars[i] = result[i]
         chars[i].charinfo = json.decode(result[i].charinfo)
@@ -99,7 +98,6 @@ local function fetchPlayerEntity(citizenId)
         name = player.name,
         money = json.decode(player.money),
         charinfo = charinfo,
-        cid = charinfo.cid,
         job = player.job and json.decode(player.job),
         gang = player.gang and json.decode(player.gang),
         position = convertPosition(player.position),

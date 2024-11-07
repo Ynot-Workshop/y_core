@@ -8,6 +8,7 @@ return {
         moneyTypes = { cash = 500, bank = 5000 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
         dontAllowMinus = { 'cash', 'crypto' }, -- Money that is not allowed going in minus
         paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
+        -- TODO: WE LIVE IN A SOCIETY (it's not ESX who the fuck actually says society)
         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
     },
 
@@ -22,6 +23,7 @@ return {
 
         ---@alias UniqueIdType 'citizenid' | 'AccountNumber' | 'PhoneNumber' | 'FingerId' | 'SerialNumber'
         ---@type table<UniqueIdType, {valueFunction: function}>
+        --- TODO: Citizen ID & SerialNumber should not be generated like that
         identifierTypes = {
             citizenid = {
                 valueFunction = function()
@@ -106,10 +108,12 @@ return {
         role = {} -- Role to tag for high priority logs. Roles use <@%roleid> and users/channels are <@userid/channelid>
     },
 
+    -- TODO: exports are a no no, enforce a base for resources to build on top of instead
     giveVehicleKeys = function(src, plate, vehicle)
         return exports.qbx_vehiclekeys:GiveKeys(src, vehicle)
     end,
 
+    -- TODO: 1: NP banking no thanks, 2: exports are a no no 3: construct a base
     getSocietyAccount = function(accountName)
         return exports['Renewed-Banking']:getAccountMoney(accountName)
     end,

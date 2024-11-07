@@ -15,7 +15,6 @@
 ---@field nationality string
 ---@field gender number
 ---@field birthdate string
----@field cid integer
 
 ---@class SubQueue : SubQueueConfig
 ---@field positions table<string, number> Player license to sub-queue position map.
@@ -83,7 +82,6 @@
 ---@field gang? PlayerGang
 ---@field position vector4
 ---@field metadata PlayerMetadata
----@field cid integer
 ---@field lastLoggedOut integer
 ---@field items table deprecated
 
@@ -101,12 +99,7 @@
 ---@field lastname string
 ---@field birthdate string
 ---@field nationality string
----@field cid integer
 ---@field gender integer
----@field backstory string
----@field phone string
----@field account string
----@field card number
 
 ---@class PlayerMetadata
 ---@field health number
@@ -148,7 +141,7 @@
 ---@field citizenid string
 ---@field model string
 ---@field skin string
----@field active integer
+---@field active integer -- TODO: that's dumb as hell, changing a skin temporarily, Ynot but maybe just don't save it in db.. (this active thing isn't even ever used to go back to your old skin...)
 
 ---@class Item
 ---@field name string

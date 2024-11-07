@@ -73,9 +73,9 @@ function CheckPlayerData(source, playerData)
     end
 
     playerData.citizenid = playerData.citizenid or GenerateUniqueIdentifier('citizenid')
-    playerData.cid = playerData.charinfo?.cid or playerData.cid or 1 --TODO: remove that shit
     playerData.money = playerData.money or {}
     playerData.optin = playerData.optin or true
+    ---TODO: make money stuff better (only cash in core?)
     for moneytype, startamount in pairs(config.money.moneyTypes) do
         playerData.money[moneytype] = playerData.money[moneytype] or startamount
     end
@@ -86,11 +86,7 @@ function CheckPlayerData(source, playerData)
     playerData.charinfo.lastname = playerData.charinfo.lastname or 'Lastname'
     playerData.charinfo.birthdate = playerData.charinfo.birthdate or '00-00-0000'
     playerData.charinfo.gender = playerData.charinfo.gender or 0
-    playerData.charinfo.backstory = playerData.charinfo.backstory or 'placeholder backstory'
     playerData.charinfo.nationality = playerData.charinfo.nationality or 'USA'
-    playerData.charinfo.phone = playerData.charinfo.phone or GenerateUniqueIdentifier('PhoneNumber')
-    playerData.charinfo.account = playerData.charinfo.account or GenerateUniqueIdentifier('AccountNumber')
-    playerData.charinfo.cid = playerData.charinfo.cid or playerData.cid
 
     -- Metadata
     playerData.metadata = playerData.metadata or {}
@@ -110,13 +106,10 @@ function CheckPlayerData(source, playerData)
     playerData.metadata.armor = playerData.metadata.armor or 0
     playerData.metadata.ishandcuffed = playerData.metadata.ishandcuffed or false
     playerData.metadata.tracker = playerData.metadata.tracker or false
-    playerData.metadata.injail = playerData.metadata.injail or 0
-    playerData.metadata.jailitems = playerData.metadata.jailitems or {}
     playerData.metadata.status = playerData.metadata.status or {}
     playerData.metadata.bloodtype = playerData.metadata.bloodtype or config.player.bloodTypes[math.random(1, #config.player.bloodTypes)]
     playerData.metadata.dealerrep = playerData.metadata.dealerrep or 0
     playerData.metadata.attachmentcraftingrep = playerData.metadata.attachmentcraftingrep or 0
-    playerData.metadata.currentapartment = playerData.metadata.currentapartment or nil
 
     playerData.metadata.craftingrep = playerData.metadata.craftingrep or 0
     playerData.metadata.jobrep = playerData.metadata.jobrep or {}

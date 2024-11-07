@@ -12,7 +12,6 @@ shared_scripts {
     '@ox_lib/init.lua',
     'modules/lib.lua',
     'shared/locale.lua',
-    'shared/functions.lua',
 }
 
 client_scripts {
@@ -23,7 +22,6 @@ client_scripts {
     'client/character.lua',
     'client/discord.lua',
     'client/vehicle-persistence.lua',
-    'bridge/qb/client/main.lua',
 }
 
 server_scripts {
@@ -37,7 +35,6 @@ server_scripts {
     'server/loops.lua',
     'server/character.lua',
     'server/vehicle-persistence.lua',
-    'bridge/qb/server/main.lua',
 }
 
 files {
@@ -50,11 +47,6 @@ files {
     'shared/main.lua',
     'shared/vehicles.lua',
     'shared/weapons.lua',
-    'bridge/qb/client/functions.lua',
-    'bridge/qb/client/drawtext.lua',
-    'bridge/qb/client/events.lua',
-    'bridge/qb/shared/main.lua',
-    'bridge/qb/shared/export-function.lua',
     'config/client.lua',
     'config/shared.lua',
     'locales/*.json'

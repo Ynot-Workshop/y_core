@@ -1,3 +1,5 @@
+-- TODO: that whole thing sucks tbh
+
 ---A persisted vehicle will respawn when deleted. Only works for player owned vehicles.
 ---Vehicles spawned using lib are automatically persisted
 ---@param vehicle number
