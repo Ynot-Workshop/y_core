@@ -1,5 +1,6 @@
 ---Gang names must be lower case (top level table key)
 ---@type table<string, Gang>
+---TODO: along with new groups system, move this to the db by an import sql file
 return {
     ['none'] = {
         label = 'No Gang',

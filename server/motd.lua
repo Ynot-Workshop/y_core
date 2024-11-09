@@ -1,3 +1,4 @@
+--TODO: idk do something with this?
 local acknowledged = GetConvar('qbx:acknowledge', 'false') == 'true'
 local messagesUrl = GetConvar('qbx:serviceMessagesUrl', 'https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/refs/heads/main/service-messages.json')
 local resourceVersion = GetResourceMetadata(cache.resource, 'version', 0)
@@ -58,7 +59,7 @@ CreateThread(function()
 
     if not acknowledged then
         messages[#messages + 1] = [[^7
-^4Welcome to ^3Qbox^4!
+^4Welcome to ^3Ybox^4!
 To learn more, please check out the documentation at ^5https://docs.qbox.re/^4.
 To turn this message off, add ^3set qbx:acknowledge true^4 to your cfg files.^7]]
     end

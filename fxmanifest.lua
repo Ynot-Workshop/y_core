@@ -1,10 +1,10 @@
 fx_version 'cerulean'
 game 'gta5'
 
-name 'qbx_core'
-description 'The core resource for the Qbox Framework'
-repository 'https://github.com/Qbox-project/qbx_core'
-version '1.21.0'
+name 'y_core'
+description 'The core resource for the Ybox Framework'
+repository 'https://github.com/Ybox-project/y_core'
+version '1.0.0'
 
 ox_lib 'locale'
 
@@ -59,6 +59,6 @@ dependencies {
     'oxmysql',
 }
 
-provide 'qb-core'
+provide 'qbx_core'
 lua54 'yes'
 use_experimental_fxv2_oal 'yes'

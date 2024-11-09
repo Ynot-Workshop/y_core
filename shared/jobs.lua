@@ -1,5 +1,6 @@
 ---Job names must be lower case (top level table key)
 ---@type table<string, Job>
+---TODO: along with new groups/jobs system, move this to the db by an import sql file
 return {
     ['unemployed'] = {
         label = 'Civilian',

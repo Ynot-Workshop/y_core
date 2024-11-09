@@ -46,6 +46,7 @@ local currentSessionId = 0
 ---If the entity already has a sessionId, this will return it rather than overwrite.
 ---@param entity number
 ---@return integer sessionId
+---TODO: SessionId is the dumbest name ever for what is essentially a glorified netId
 local function createSessionId(entity)
     local existingSessionId = Entity(entity).state.sessionId
     if existingSessionId then
