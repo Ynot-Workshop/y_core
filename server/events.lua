@@ -126,10 +126,11 @@ AddEventHandler('playerConnecting', onPlayerConnecting)
 AddEventHandler('onResourceStart', function(resource)
     if resource ~= cache.resource then return end
 
+    --TODO: don't do that ffs
     storage.createUsersTable()
 end)
 
--- New method for checking if logged in across all scripts (optional)
+-- Allows for checking if a player is logged in across all scripts (optional)
 -- `if LocalPlayer.state.isLoggedIn then` for the client side
 -- `if Player(source).state.isLoggedIn then` for the server side
 RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
@@ -170,7 +171,7 @@ RegisterNetEvent('QBCore:Server:OpenServer', function()
 end)
 
 -- Player
-
+--TODO: group module
 RegisterNetEvent('QBCore:ToggleDuty', function()
     local src = source --[[@as Source]]
     local player = GetPlayer(src)
@@ -182,33 +183,4 @@ RegisterNetEvent('QBCore:ToggleDuty', function()
         player.Functions.SetJobDuty(true)
         Notify(src, locale('info.on_duty'))
     end
-end)
-
----Syncs the player's hunger, thirst, and stress levels with the statebags
----@param bagName string
----@param meta 'hunger' | 'thirst' | 'stress'
----@param value number
-local function playerStateBagCheck(bagName, meta, value)
-    if not value then return end
-    local plySrc = GetPlayerFromStateBagName(bagName)
-    if not plySrc then return end
-    local player = QBX.Players[plySrc]
-    if not player then return end
-    if player.PlayerData.metadata[meta] == value then return end
-    player.Functions.SetMetaData(meta, value)
-end
-
----@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler('hunger', nil, function(bagName, _, value)
-    playerStateBagCheck(bagName, 'hunger', value)
-end)
-
----@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler('thirst', nil, function(bagName, _, value)
-    playerStateBagCheck(bagName, 'thirst', value)
-end)
-
----@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler('stress', nil, function(bagName, _, value)
-    playerStateBagCheck(bagName, 'stress', value)
 end)

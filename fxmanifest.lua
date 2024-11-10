@@ -38,6 +38,7 @@ server_scripts {
 }
 
 files {
+    --TODO: load modules correctly (only client files)
     'modules/*.lua',
     'data/*.lua',
     'shared/gangs.lua',

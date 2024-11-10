@@ -2,12 +2,6 @@ local config = require 'config.server'
 local defaultSpawn = require 'config.shared'.defaultSpawn
 local logger = require 'modules.logger'
 local storage = require 'server.storage.main'
-local accounts = json.decode(GetConvar('inventory:accounts', '["money"]'))
-local accountsAsItems = table.create(0, #accounts)
-
-for i = 1, #accounts do
-    accountsAsItems[accounts[i]] = 0
-end
 
 ---@param source Source
 ---@param citizenid? string
@@ -90,6 +84,8 @@ function CheckPlayerData(source, playerData)
 
     -- Metadata
     playerData.metadata = playerData.metadata or {}
+    --#region statuses
+    -- TODO: statuses should be their own columns, possibly in a separate table (also would simplify the setmetadata being buggy!!)
     playerData.metadata.health = playerData.metadata.health or 200
     playerData.metadata.hunger = playerData.metadata.hunger or 100
     playerData.metadata.thirst = playerData.metadata.thirst or 100
@@ -104,13 +100,16 @@ function CheckPlayerData(source, playerData)
     playerData.metadata.isdead = playerData.metadata.isdead or false
     playerData.metadata.inlaststand = playerData.metadata.inlaststand or false
     playerData.metadata.armor = playerData.metadata.armor or 0
+    --#endregion
+
     playerData.metadata.ishandcuffed = playerData.metadata.ishandcuffed or false
     playerData.metadata.tracker = playerData.metadata.tracker or false
     playerData.metadata.status = playerData.metadata.status or {}
     playerData.metadata.bloodtype = playerData.metadata.bloodtype or config.player.bloodTypes[math.random(1, #config.player.bloodTypes)]
+
+    -- TODO: reputation module, reputation table with | id | citizenId | groupId | type | reputation |
     playerData.metadata.dealerrep = playerData.metadata.dealerrep or 0
     playerData.metadata.attachmentcraftingrep = playerData.metadata.attachmentcraftingrep or 0
-
     playerData.metadata.craftingrep = playerData.metadata.craftingrep or 0
     playerData.metadata.jobrep = playerData.metadata.jobrep or {}
     playerData.metadata.jobrep.tow = playerData.metadata.jobrep.tow or 0
@@ -120,6 +119,7 @@ function CheckPlayerData(source, playerData)
 
     playerData.metadata.callsign = playerData.metadata.callsign or 'NO CALLSIGN'
     playerData.metadata.fingerprint = playerData.metadata.fingerprint or GenerateUniqueIdentifier('FingerId')
+    --TODO: license module? license table? | id | citizenId | type | validity | obtentionDate |
     playerData.metadata.licences = playerData.metadata.licences or {
         id = true,
         driver = false,
@@ -151,6 +151,8 @@ function CheckPlayerData(source, playerData)
     playerData.gang.grade.level = playerData.gang.grade.level or 0
 
     playerData.position = playerData.position or defaultSpawn
+
+    --TODO: idk how ox_inventory handles that but maybe items should be in a separate table (IMO TBH it should)
     playerData.items = {}
     return CreatePlayer(playerData --[[@as PlayerData]], Offline)
 end
@@ -340,86 +342,6 @@ function CreatePlayer(playerData, Offline)
         return GetMoney(self.PlayerData.source, moneytype)
     end ]]
 
-    local function qbItemCompat(item)
-        if not item then return end
-
-        item.info = item.metadata
-        item.amount = item.count
-
-        return item
-    end
-
-    ---@param item string
-    ---@return string
-    local function oxItemCompat(item)
-        return item == 'cash' and 'money' or item
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    ---@param item string
-    ---@param amount number
-    ---@param metadata? table
-    ---@param slot? number
-    ---@return boolean success
-    function self.Functions.AddItem(item, amount, slot, metadata)
-        assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:AddItem(self.PlayerData.source, oxItemCompat(item), amount, metadata, slot)
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    ---@param item string
-    ---@param amount number
-    ---@param slot? number
-    ---@return boolean success
-    function self.Functions.RemoveItem(item, amount, slot)
-        assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:RemoveItem(self.PlayerData.source, oxItemCompat(item), amount, nil, slot)
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    ---@param slot number
-    ---@return any table
-    function self.Functions.GetItemBySlot(slot)
-        assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlot(self.PlayerData.source, slot))
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    ---@param itemName string
-    ---@return any table
-    function self.Functions.GetItemByName(itemName)
-        assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlotWithItem(self.PlayerData.source, oxItemCompat(itemName)))
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    ---@param itemName string
-    ---@return any table
-    function self.Functions.GetItemsByName(itemName)
-        assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlotsWithItem(self.PlayerData.source, oxItemCompat(itemName)))
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    function self.Functions.ClearInventory()
-        assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:ClearInventory(self.PlayerData.source)
-    end
-
-    ---@deprecated use ox_inventory exports directly
-    function self.Functions.SetInventory()
-        error('Player.Functions.SetInventory is unsupported for ox_inventory. Try ClearInventory, then add the desired items.')
-    end
-
-    ---@deprecated use SetCharInfo instead
-    ---@param cardNumber number
-    function self.Functions.SetCreditCard(cardNumber)
-        self.PlayerData.charinfo.card = cardNumber
-
-        ---@diagnostic disable-next-line: param-type-mismatch
-        UpdatePlayerData(self.Offline and self.PlayerData.citizenid or self.PlayerData.source)
-    end
-
     ---@deprecated use Save or SaveOffline instead
     function self.Functions.Save()
         if self.Offline then
@@ -483,7 +405,6 @@ function Save(source)
             position = pcoords,
         })
     end)
-    assert(GetResourceState('qb-inventory') ~= 'started', 'qb-inventory is not compatible with qbx_core. use ox_inventory instead')
     lib.print.verbose(('%s PLAYER SAVED!'):format(playerData.name))
 end
 
@@ -502,7 +423,6 @@ function SaveOffline(playerData)
             position = playerData.position.xyz
         })
     end)
-    assert(GetResourceState('qb-inventory') ~= 'started', 'qb-inventory is not compatible with qbx_core. use ox_inventory instead')
     lib.print.verbose(('%s OFFLINE PLAYER SAVED!'):format(playerData.name))
 end
 
@@ -545,6 +465,7 @@ function SetMetadata(identifier, metadata, value)
 
     local oldValue = player.PlayerData.metadata[metadata]
 
+    -- clamp before!!
     player.PlayerData.metadata[metadata] = value
 
     UpdatePlayerData(identifier)
@@ -556,6 +477,7 @@ function SetMetadata(identifier, metadata, value)
         TriggerEvent('qbx_core:server:onSetMetaData', metadata,  oldValue, value, player.PlayerData.source)
 
         if (metadata == 'hunger' or metadata == 'thirst' or metadata == 'stress') then
+            --TODO: the clamp happens too late, could be easily fixed by just not using metadata lol!
             value = lib.math.clamp(value, 0, 100)
 
             if playerState[metadata] ~= value then

@@ -1,6 +1,7 @@
 local defaultSpawn = require 'config.shared'.defaultSpawn
 local characterDataTables = require 'config.server'.characterDataTables
 
+--TODO: remove that, and NEVER create tables using oxmysql, you shouldn't use an account with those perms for your server...
 local function createUsersTable()
     MySQL.query([[
         CREATE TABLE IF NOT EXISTS `users` (

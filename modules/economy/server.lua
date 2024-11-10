@@ -1,5 +1,12 @@
 --TODO: rework everything
 
+local accounts = json.decode(GetConvar('inventory:accounts', '["money"]'))
+local accountsAsItems = table.create(0, #accounts)
+
+for i = 1, #accounts do
+    accountsAsItems[accounts[i]] = 0
+end
+
 ---@param source Source
 ---@param playerMoney table
 ---@param moneyType MoneyType

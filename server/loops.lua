@@ -1,5 +1,6 @@
 local config = require 'config.server'
 
+--TODO: status module
 local function removeHungerAndThirst(src, player)
     local playerState = Player(src).state
     if not playerState.isLoggedIn then return end
@@ -22,6 +23,7 @@ CreateThread(function()
     end
 end)
 
+--TODO: economy module
 local function pay(player)
     local job = player.PlayerData.job
     local payment = job.payment or 0
