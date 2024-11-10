@@ -1,11 +1,29 @@
 # y_core
 
 y_core is the core of the Ybox framework, aimed to be a successor to qb-core continuing the development of a solid foundation for building easy-to-use, performant, and secure server resources.
-The main goal being to promote better practices, not backwards compatible is a feature, not a bug. (if you care that your 2021 qbus resource still works *(that's what backwards compatibility mean btw)*, the Qbox team will love you!)
+The main goal being to promote better practices, not being backwards compatible is a feature, not a bug. (if you care that your 2021 qbus resource still works *(that's what backwards compatibility mean btw)*, the Qbox team will love you!)
+Other goals include:
+    - A more modular system to be more organized
+    - "Bloat" the core with systems that every server needs and are often poorly implemented in separate resources (animations, reputation etc)
+    - An actual proper DB
+    - Reducing the dependencies to a minimum (ideally only oxmysql & ox_lib)
+
 
 ## Current Plan
 - [ ] new file structure
     - [ ] Use modules
+        - [ ] discord
+        - [ ] status
+        - [ ] player
+        - [ ] vehicle
+        - [ ] animation
+        - [ ] skin
+        - [ ] group
+        - [ ] crew
+        - [ ] weapon
+        - [ ] vehicle
+        - [ ] reputation
+
 - [ ] New Database Structure
 - [ ] New group system
 - [ ] New vehicle system
@@ -35,6 +53,7 @@ The core makes available several optional modules for developers to import into 
 - Skin: A base system for character skin
 - Groups: A whole new group system, replacing the gang/job system
 - Crews: A crew system, similar to a group, but to a smaller scale to use in multiplayer (legal or not) activities
+- Reputation: A reputation system, to track player, group, and crew reputation in different aspects (job, crime, etc.)
 
 # Dependencies
 
