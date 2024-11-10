@@ -43,7 +43,6 @@ files {
     'shared/gangs.lua',
     'shared/items.lua',
     'shared/jobs.lua',
-    'shared/locations.lua',
     'shared/main.lua',
     'shared/vehicles.lua',
     'shared/weapons.lua',

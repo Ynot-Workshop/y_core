@@ -118,19 +118,3 @@ function GetVehiclesByCategory()
 end
 
 exports('GetVehiclesByCategory', GetVehiclesByCategory)
-
----@return table<number, Weapon>
-function GetWeapons()
-    return QBX.Shared.Weapons
-end
-
-exports('GetWeapons', GetWeapons)
-
----@deprecated
----@return table<string, vector4>
-function GetLocations()
-    return QBX.Shared.Locations
-end
-
----@diagnostic disable-next-line: deprecated
-exports('GetLocations', GetLocations)
