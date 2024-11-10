@@ -39,6 +39,8 @@ if mapText == '' or type(mapText) ~= 'string' then mapText = 'FiveM' end
 AddTextEntry('FE_THDR_GTAO', mapText)
 
 CreateThread(function()
+    NetworkSetLocalPlayerSyncLookAt(true)
+
     for _, v in pairs(GetVehiclesByName()) do
         if v.model and v.name then
             local gameName = GetDisplayNameFromVehicleModel(v.model)

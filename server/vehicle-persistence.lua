@@ -17,7 +17,7 @@ end
 
 exports('DisablePersistence', DisablePersistence)
 
-if GetConvar('qbx:enableVehiclePersistence', 'false') == 'false' then return end
+if GetConvar('ybox:enableVehiclePersistence', 'false') == 'false' then return end
 
 assert(lib.checkDependency('qbx_vehicles', '1.4.1', true))
 

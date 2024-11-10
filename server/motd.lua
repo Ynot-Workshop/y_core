@@ -1,6 +1,6 @@
 --TODO: idk do something with this?
-local acknowledged = GetConvar('qbx:acknowledge', 'false') == 'true'
-local messagesUrl = GetConvar('qbx:serviceMessagesUrl', 'https://raw.githubusercontent.com/Qbox-project/txAdminRecipe/refs/heads/main/service-messages.json')
+local acknowledged = GetConvar('ybox:acknowledge', 'false') == 'true'
+local messagesUrl = GetConvar('ybox:serviceMessagesUrl', '')
 local resourceVersion = GetResourceMetadata(cache.resource, 'version', 0)
 
 ---@param str string
@@ -60,8 +60,7 @@ CreateThread(function()
     if not acknowledged then
         messages[#messages + 1] = [[^7
 ^4Welcome to ^3Ybox^4!
-To learn more, please check out the documentation at ^5https://docs.qbox.re/^4.
-To turn this message off, add ^3set qbx:acknowledge true^4 to your cfg files.^7]]
+To turn this message off, add ^3set ybox:acknowledge true^4 to your cfg files.^7]]
     end
 
     local requestPromise = promise:new()
@@ -79,7 +78,7 @@ To turn this message off, add ^3set qbx:acknowledge true^4 to your cfg files.^7]
             if type(message) == 'table' and message.content and isResourceVersion(message.version) then
                 if not hasServiceMessage then
                     hasServiceMessage = true
-                    messages[#messages + 1] = '\n^5Qbox service messages:^7'
+                    messages[#messages + 1] = '\n^5Ybox service messages:^7'
                 end
 
                 local content = validateContent(message.content)

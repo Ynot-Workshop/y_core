@@ -19,7 +19,7 @@ if startupErrors then
 end
 
 ---@type 'strict'|'relaxed'|'inactive'
-local bucketLockDownMode = GetConvar('qbx:bucketlockdownmode', 'inactive')
+local bucketLockDownMode = GetConvar('ybox:bucketlockdownmode', 'inactive')
 SetRoutingBucketEntityLockdownMode(0, bucketLockDownMode)
 
 QBX = {}
