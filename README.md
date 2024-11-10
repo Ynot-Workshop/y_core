@@ -1,12 +1,16 @@
 # y_core
 
-y_core is the core of the Ybox framework, aimed to be a successor to qb-core continuing the development of a solid foundation for building easy-to-use, performant, and secure server resources.
-The main goal being to promote better practices, not being backwards compatible is a feature, not a bug. (if you care that your 2021 qbus resource still works *(that's what backwards compatibility mean btw)*, the Qbox team will love you!)
-Other goals include:
-    - A more modular system to be more organized
-    - "Bloat" the core with systems that every server needs and are often poorly implemented in separate resources (animations, reputation etc)
-    - An actual proper DB
-    - Reducing the dependencies to a minimum (ideally only oxmysql & ox_lib)
+y_core is the core for the Ybox framework, aimed to be a successor to qb-core, and continuing the development of a solid foundation for building easy-to-use, performant, and secure server resources.
+
+The ***main goal*** is to promote better practices, so of course, not being backwards compatible is a feature, not a bug.
+*(if you care that your 2021 qbus resource still works *(that's what backwards compatibility mean btw)*, the Qbox team will love you!)*
+
+Other ***goals*** include:
+- A more modular system to be more organized
+- "Bloat" the core with systems that every server needs and are often poorly implemented in separate resources (animations, reputation etc)
+- An actual proper DB
+- Reducing the dependencies to a minimum (ideally only oxmysql & ox_lib)
+- Provide some kind of migration from qbox/qb, mostly for the DB.
 
 
 ## Current Plan
