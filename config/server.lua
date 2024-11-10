@@ -12,6 +12,8 @@ return {
         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
     },
 
+    ForceJobDefaultDutyAtLogin = true,
+
     player = {
         hungerRate = 4.2, -- Rate at which hunger goes down.
         thirstRate = 3.8, -- Rate at which thirst goes down.
