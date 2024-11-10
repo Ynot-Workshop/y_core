@@ -1,4 +1,4 @@
-if GetConvar('qbx:enableVehiclePersistence', 'false') == 'false' then return end
+if GetConvar('ybox:enableVehiclePersistence', 'false') == 'false' then return end
 
 local cachedProps
 local netId

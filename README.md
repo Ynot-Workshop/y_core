@@ -22,6 +22,7 @@ Other goals include:
         - [ ] crew
         - [ ] weapon
         - [ ] vehicle
+        - [ ] vehicle persistence
         - [ ] reputation
 
 - [ ] New Database Structure

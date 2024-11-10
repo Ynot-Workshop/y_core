@@ -1,3 +1,5 @@
+--TODO: use skin module
+
 local config = require 'config.client'
 local defaultSpawn = require 'config.shared'.defaultSpawn
 
@@ -258,7 +260,7 @@ local function capString(str)
     end)
 end
 
-local function spawnDefault() -- We use a callback to make the server wait on this to be done
+local function spawnCharacterCreation() -- We use a callback to make the server wait on this to be done
     DoScreenFadeOut(500)
 
     while not IsScreenFadedOut() do
@@ -276,12 +278,12 @@ local function spawnDefault() -- We use a callback to make the server wait on th
 
     TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
     TriggerEvent('QBCore:Client:OnPlayerLoaded')
-    TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
-    TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
 
     while not IsScreenFadedIn() do
         Wait(0)
     end
+
+    --TODO: new event name, y_clothing
     TriggerEvent('qb-clothes:client:CreateFirstCharacter')
 end
 
@@ -303,8 +305,6 @@ local function spawnLastLocation()
 
     TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
     TriggerEvent('QBCore:Client:OnPlayerLoaded')
-    TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
-    TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
 
     while not IsScreenFadedIn() do
         Wait(0)
@@ -330,7 +330,7 @@ local function createCharacter()
     end
 
     DoScreenFadeOut(150)
-    local newData = lib.callback.await('qbx_core:server:createCharacter', false, {
+    lib.callback.await('qbx_core:server:createCharacter', false, {
         firstname = capString(dialog[1]),
         lastname = capString(dialog[2]),
         nationality = capString(dialog[3]),
@@ -338,15 +338,7 @@ local function createCharacter()
         birthdate = dialog[5],
     })
 
-    if GetResourceState('qbx_spawn') == 'missing' then
-        spawnDefault()
-    else
-        if config.characters.startingApartment then
-            TriggerEvent('apartments:client:setupSpawnUI', newData)
-        else
-            TriggerEvent('qbx_core:client:spawnNoApartments')
-        end
-    end
+    spawnCharacterCreation()
 
     destroyPreviewCam()
     return true
@@ -390,14 +382,12 @@ local function chooseCharacter()
                 Gender = character.charinfo.gender == 0 and locale('info.char_male') or locale('info.char_female'),
                 Birthdate = character.charinfo.birthdate,
                 Nationality = character.charinfo.nationality,
-                ['Account Number'] = character.charinfo.account,
                 Bank = lib.math.groupdigits(character.money.bank),
                 Cash = lib.math.groupdigits(character.money.cash),
                 Job = character.job.label,
                 ['Job Grade'] = character.job.grade.name,
                 Gang = character.gang.label,
-                ['Gang Grade'] = character.gang.grade.name,
-                ['Phone Number'] = character.charinfo.phone
+                ['Gang Grade'] = character.gang.grade.name
             } or nil,
             icon = 'user',
             onSelect = function()
@@ -427,14 +417,7 @@ local function chooseCharacter()
                         onSelect = function()
                             DoScreenFadeOut(10)
                             lib.callback.await('qbx_core:server:loadCharacter', false, character.citizenid)
-                            if GetResourceState('qbx_apartments'):find('start') then
-                                TriggerEvent('apartments:client:setupSpawnUI', character.citizenid)
-                            elseif GetResourceState('qbx_spawn'):find('start') then
-                                TriggerEvent('qb-spawn:client:setupSpawns', character.citizenid)
-                                TriggerEvent('qb-spawn:client:openUI', true)
-                            else
-                                spawnLastLocation()
-                            end
+                            spawnLastLocation()
                             destroyPreviewCam()
                         end
                     },
@@ -474,24 +457,6 @@ local function chooseCharacter()
     lib.showContext('qbx_core_multichar_characters')
 end
 
-RegisterNetEvent('qbx_core:client:spawnNoApartments', function() -- This event is only for no starting apartments
-    DoScreenFadeOut(500)
-    Wait(2000)
-    SetEntityCoords(cache.ped, defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, false, false, false, false)
-    SetEntityHeading(cache.ped, defaultSpawn.w)
-    Wait(500)
-    destroyPreviewCam()
-    SetEntityVisible(cache.ped, true, false)
-    Wait(500)
-    DoScreenFadeIn(250)
-    TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
-    TriggerEvent('QBCore:Client:OnPlayerLoaded')
-    TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
-    TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
-    TriggerEvent('qb-weathersync:client:EnableSync')
-    TriggerEvent('qb-clothes:client:CreateFirstCharacter')
-end)
-
 RegisterNetEvent('qbx_core:client:playerLoggedOut', function()
     if GetInvokingResource() then return end -- Make sure this can only be triggered from the server
     chooseCharacter()
@@ -503,6 +468,7 @@ CreateThread(function()
         if NetworkIsSessionStarted() then
             pcall(function() exports.spawnmanager:setAutoSpawn(false) end)
             Wait(250)
+            --TODO: use last character if any or random ped
             randomPed()
             chooseCharacter()
             break

@@ -53,7 +53,14 @@ lib.callback.register('qbx_core:server:loadCharacter', function(source, citizenI
     lib.print.info(('%s (Citizen ID: %s ID: %s) has successfully loaded!'):format(GetPlayerName(source), citizenId, source))
 end)
 
----@param data unknown
+---@class createCharacterData
+---@field firstname string
+---@field lastname string
+---@field nationality string
+---@field gender boolean
+---@field birthdate string
+
+---@param data createCharacterData
 ---@return table? newData
 lib.callback.register('qbx_core:server:createCharacter', function(source, data)
     local newData = {}
