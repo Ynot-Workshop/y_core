@@ -42,11 +42,13 @@ lib.callback.register('qbx_core:server:loadCharacter', function(source, citizenI
     if not success then return end
 
     logger.log({
-        source = 'qbx_core',
-        webhook = config.logging.webhook['joinleave'],
+        source = citizenId,
         event = 'Loaded',
-        color = 'green',
-        message = ('**%s** (%s |  ||%s|| | %s | %s | %s) loaded'):format(GetPlayerName(source), GetPlayerIdentifierByType(source, 'discord') or 'undefined', GetPlayerIdentifierByType(source, 'ip') or 'undefined', GetPlayerIdentifierByType(source, 'license2') or GetPlayerIdentifierByType(source, 'license') or 'undefined', citizenId, source)
+        message = ('**%s** (%s | %s | %s) loaded'):format(GetPlayerName(source), GetPlayerIdentifierByType(source, 'license2') or GetPlayerIdentifierByType(source, 'license') or 'undefined', citizenId, source),
+        metadata = {
+            license2 =  GetPlayerIdentifierByType(source, 'license2'),
+            license = GetPlayerIdentifierByType(source, 'license')
+        }
     })
     lib.print.info(('%s (Citizen ID: %s ID: %s) has successfully loaded!'):format(GetPlayerName(source), citizenId, source))
 end)

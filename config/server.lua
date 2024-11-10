@@ -96,16 +96,8 @@ return {
         defaultNumberOfCharacters = 3, -- Define maximum amount of default characters (maximum 3 characters defined by default)
     },
 
-    -- this configuration is for core events only. putting other webhooks here will have no effect
-    logging = {
-        webhook = {
-            ['default'] = nil, -- default
-            ['joinleave'] = nil, -- default
-            ['ooc'] = nil, -- default
-            ['anticheat'] = nil, -- default
-            ['playermoney'] = nil, -- default
-        },
-        role = {} -- Role to tag for high priority logs. Roles use <@%roleid> and users/channels are <@userid/channelid>
+    logger = {
+        useFMSDK = false -- Wheter to use Fivemanage's SDK for logging or ox_lib's logger
     },
 
     -- TODO: exports are a no no, enforce a base for resources to build on top of instead

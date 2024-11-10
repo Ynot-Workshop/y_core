@@ -27,12 +27,12 @@ function Login(source, citizenid, newData)
         else
             DropPlayer(tostring(source), locale('info.exploit_dropped'))
             logger.log({
-                source = 'qbx_core',
-                webhook = config.logging.webhook.anticheat,
+                source = citizenid,
                 event = 'Anti-Cheat',
-                color = 'white',
-                tags = config.logging.role,
-                message = ('%s has been dropped for character joining exploit'):format(GetPlayerName(source))
+                message = ('%s has been dropped for character joining exploit'):format(GetPlayerName(source)),
+                metadata = {
+                    citizenid = citizenid
+                }
             })
         end
     else
@@ -656,19 +656,6 @@ function AddMoney(identifier, moneyType, amount, reason)
     if not player.Offline then
         UpdatePlayerData(identifier)
 
-        local tags = amount > 100000 and config.logging.role or nil
-        local resource = GetInvokingResource() or cache.resource
-
-        logger.log({
-            source = resource,
-            webhook = config.logging.webhook['playermoney'],
-            event = 'AddMoney',
-            color = 'lightgreen',
-            tags = tags,
-            message = ('**%s (citizenid: %s | id: %s)** $%s (%s) added, new %s balance: $%s reason: %s'):format(GetPlayerName(player.PlayerData.source), player.PlayerData.citizenid, player.PlayerData.source, amount, moneyType, moneyType, player.PlayerData.money[moneyType], reason),
-            --oxLibTags = ('script:%s,playerName:%s,citizenId:%s,playerSource:%s,amount:%s,moneyType:%s,newBalance:%s,reason:%s'):format(resource, GetPlayerName(player.PlayerData.source), player.PlayerData.citizenid, player.PlayerData.source, amount, moneyType, player.PlayerData.money[moneyType], reason)
-        })
-
         emitMoneyEvents(player.PlayerData.source, player.PlayerData.money, moneyType, amount, 'add', false, reason)
     end
 
@@ -704,20 +691,6 @@ function RemoveMoney(identifier, moneyType, amount, reason)
 
     if not player.Offline then
         UpdatePlayerData(identifier)
-
-        local tags = amount > 100000 and config.logging.role or nil
-        local resource = GetInvokingResource() or cache.resource
-
-        logger.log({
-            source = resource,
-            webhook = config.logging.webhook['playermoney'],
-            event = 'RemoveMoney',
-            color = 'red',
-            tags = tags,
-            message = ('** %s (citizenid: %s | id: %s)** $%s (%s) removed, new %s balance: $%s reason: %s'):format(GetPlayerName(player.PlayerData.source), player.PlayerData.citizenid, player.PlayerData.source, amount, moneyType, moneyType, player.PlayerData.money[moneyType], reason),
-            --oxLibTags = ('script:%s,playerName:%s,citizenId:%s,playerSource:%s,amount:%s,moneyType:%s,newBalance:%s,reason:%s'):format(resource, GetPlayerName(player.PlayerData.source), player.PlayerData.citizenid, player.PlayerData.source, amount, moneyType, player.PlayerData.money[moneyType], reason)
-        })
-
         emitMoneyEvents(player.PlayerData.source, player.PlayerData.money, moneyType, amount, 'remove', false, reason)
     end
 
@@ -745,22 +718,6 @@ function SetMoney(identifier, moneyType, amount, reason)
 
     if not player.Offline then
         UpdatePlayerData(identifier)
-
-        local difference = amount - player.PlayerData.money[moneyType]
-        local dirChange = difference < 0 and 'removed' or 'added'
-        local absDifference = math.abs(difference)
-        local tags = absDifference > 50000 and config.logging.role or {}
-        local resource = GetInvokingResource() or cache.resource
-
-        logger.log({
-            source = resource,
-            webhook = config.logging.webhook['playermoney'],
-            event = 'SetMoney',
-            color = difference < 0 and 'red' or 'green',
-            tags = tags,
-            message = ('**%s (citizenid: %s | id: %s)** $%s (%s) %s, new %s balance: $%s reason: %s'):format(GetPlayerName(player.PlayerData.source), player.PlayerData.citizenid, player.PlayerData.source, absDifference, moneyType, dirChange, moneyType, player.PlayerData.money[moneyType], reason),
-            --oxLibTags = ('script:%s,playerName:%s,citizenId:%s,playerSource:%s,amount:%s,moneyType:%s,newBalance:%s,reason:%s,direction:%s'):format(resource, GetPlayerName(player.PlayerData.source), player.PlayerData.citizenid, player.PlayerData.source, absDifference, moneyType, player.PlayerData.money[moneyType], reason, dirChange)
-        })
     end
 
     return true
@@ -793,23 +750,25 @@ function DeleteCharacter(source, citizenid)
             local success = storage.deletePlayer(citizenid)
             if success then
                 logger.log({
-                    source = 'qbx_core',
-                    webhook = config.logging.webhook['joinleave'],
+                    source = citizenid,
                     event = 'Character Deleted',
-                    color = 'red',
                     message = ('**%s** deleted **%s**...'):format(GetPlayerName(source), citizenid, source),
+                    metadata = {
+                        citizenid = citizenid
+                    }
                 })
             end
         end)
     else
         DropPlayer(tostring(source), locale('info.exploit_dropped'))
         logger.log({
-            source = 'qbx_core',
-            webhook = config.logging.webhook['anticheat'],
+            source = citizenid,
             event = 'Anti-Cheat',
-            color = 'white',
-            tags = config.logging.role,
             message = ('%s has been dropped for character deleting exploit'):format(GetPlayerName(source)),
+            metadata = {
+                citizenid = citizenid,
+                license = license or license2
+            }
         })
     end
 end
@@ -827,11 +786,13 @@ function ForceDeleteCharacter(citizenid)
             local success = storage.deletePlayer(citizenid)
             if success then
                 logger.log({
-                    source = 'qbx_core',
-                    webhook = config.logging.webhook['joinleave'],
+                    source = citizenid,
                     event = 'Character Force Deleted',
-                    color = 'red',
                     message = ('Character **%s** got deleted'):format(citizenid),
+                    metadata = {
+                        citizenid = citizenid,
+                        license = result
+                    }
                 })
             end
         end)

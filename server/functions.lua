@@ -1,7 +1,5 @@
 local serverConfig = require 'config.server'.server
 local positionConfig = require 'config.shared'.notifyPosition
-local logger = require 'modules.logger'
-local loggingConfig = require 'config.server'.logging
 local storage = require 'server.storage.main'
 
 -- Getters

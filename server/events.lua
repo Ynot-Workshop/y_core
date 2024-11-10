@@ -1,5 +1,4 @@
 local serverConfig = require 'config.server'.server
-local loggingConfig = require 'config.server'.logging
 local serverName = require 'config.shared'.serverName
 local storage = require 'server.storage.main'
 local logger = require 'modules.logger'
@@ -43,11 +42,13 @@ AddEventHandler('playerDropped', function(reason)
     local player = QBX.Players[src]
     player.PlayerData.lastLoggedOut = os.time()
     logger.log({
-        source = 'qbx_core',
-        webhook = loggingConfig.webhook['joinleave'],
+        source = player.PlayerData.citizenid,
         event = 'Dropped',
-        color = 'red',
         message = ('**%s** (%s) left...\n **Reason:** %s'):format(GetPlayerName(src), player.PlayerData.license, reason),
+        metadata = {
+            license = player.PlayerData.license,
+            reason = reason
+        }
     })
     player.Functions.Save()
     QBX.Player_Buckets[player.PlayerData.license] = nil

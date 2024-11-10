@@ -3,10 +3,23 @@
 y_core is the core of the Ybox framework, aimed to be a successor to qb-core continuing the development of a solid foundation for building easy-to-use, performant, and secure server resources.
 The main goal being to promote better practices, not backwards compatible is a feature, not a bug. (if you care that your 2021 qbus resource still works *(that's what backwards compatibility mean btw)*, the Qbox team will love you!)
 
-# Features
+## Current Plan
+- [ ] new file structure
+    - [ ] Use modules
+- [ ] New Database Structure
+- [ ] New group system
+- [ ] New vehicle system
+- [ ] New animation system
+
+### Maybes
+- [ ] Weapon stat module, modifying weapon stats using data stored in the database for easy modification by resources & hot-reloading
+- [ ] Vehicle stat module, modifying vehicle stats using data stored in the database for easy modification by resources & hot-reloading
+
+## Features
 
 - Built-in multicharacter
 - Built-in queue system for full servers
+- Logger system
 - Persistent player vehicles (not what it sounds like since the qbox team is incompetent)
 - Exports (a lot of them)
 

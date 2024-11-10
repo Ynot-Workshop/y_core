@@ -8,7 +8,6 @@
         "company_too_poor": "Votre entreprise n'a pas suffisamment d'argent",
         "item_not_exist": "L'objet n'existe pas",
         "too_heavy": "L'inventaire est plein",
-        "location_not_exist": "Destination inexistante",
         "duplicate_license": "License Rockstar Dupliquée trouvée",
         "no_valid_license":  "Aucune License Rockstar trouvée",
         "server_already_open": "Le serveur est déjà ouvert",
