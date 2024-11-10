@@ -5,6 +5,7 @@ return {
     ---@type { name: string, amount: integer, metadata: fun(source: number): table }[]
     starterItems = { -- Character starting items
         { name = 'phone', amount = 1 },
+        --TODO: qbx_idcard dependency stinks (y_idcard poggers?)
         { name = 'id_card', amount = 1, metadata = function(source)
                 assert(GetResourceState('qbx_idcard') == 'started', 'qbx_idcard resource not found. Required to give an id_card as a starting item')
                 return exports.qbx_idcard:GetMetaLicense(source, {'id_card'})

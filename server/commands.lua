@@ -1,5 +1,5 @@
+--TODO: cleanup, maybe move some of them to corresponding resources?
 local config = require 'config.server'
-local logger = require 'modules.logger'
 
 GlobalState.PVPEnabled = config.server.pvp
 
@@ -250,61 +250,6 @@ lib.addCommand('setjob', {
     assert(success, json.encode(errorResult))
 end)
 
-lib.addCommand('changejob', {
-    help = locale('command.changejob.help'),
-    params = {
-        { name = locale('command.changejob.params.id.name'), help = locale('command.changejob.params.id.help'), type = 'playerId' },
-        { name = locale('command.changejob.params.job.name'), help = locale('command.changejob.params.job.help'), type = 'string' },
-    },
-    restricted = 'group.admin'
-}, function(source, args)
-    local player = GetPlayer(args[locale('command.changejob.params.id.name')])
-    if not player then
-        Notify(source, locale('error.not_online'), 'error')
-        return
-    end
-
-    local success, errorResult = SetPlayerPrimaryJob(player.PlayerData.citizenid, args[locale('command.changejob.params.job.name')])
-    assert(success, json.encode(errorResult))
-end)
-
-lib.addCommand('addjob', {
-    help = locale('command.addjob.help'),
-    params = {
-        { name = locale('command.addjob.params.id.name'), help = locale('command.addjob.params.id.help'), type = 'playerId' },
-        { name = locale('command.addjob.params.job.name'), help = locale('command.addjob.params.job.help'), type = 'string' },
-        { name = locale('command.addjob.params.grade.name'), help = locale('command.addjob.params.grade.help'), type = 'number', optional = true}
-    },
-    restricted = 'group.admin'
-}, function(source, args)
-    local player = GetPlayer(args[locale('command.addjob.params.id.name')])
-    if not player then
-        Notify(source, locale('error.not_online'), 'error')
-        return
-    end
-
-    local success, errorResult = AddPlayerToJob(player.PlayerData.citizenid, args[locale('command.addjob.params.job.name')], args[locale('command.addjob.params.grade.name')] or 0)
-    assert(success, json.encode(errorResult))
-end)
-
-lib.addCommand('removejob', {
-    help = locale('command.removejob.help'),
-    params = {
-        { name = locale('command.removejob.params.id.name'), help = locale('command.removejob.params.id.help'), type = 'playerId' },
-        { name = locale('command.removejob.params.job.name'), help = locale('command.removejob.params.job.help'), type = 'string' }
-    },
-    restricted = 'group.admin'
-}, function(source, args)
-    local player = GetPlayer(args[locale('command.removejob.params.id.name')])
-    if not player then
-        Notify(source, locale('error.not_online'), 'error')
-        return
-    end
-
-    local success, errorResult = RemovePlayerFromJob(player.PlayerData.citizenid, args[locale('command.removejob.params.job.name')])
-    assert(success, json.encode(errorResult))
-end)
-
 lib.addCommand('gang', {
     help = locale('command.gang.help')
 }, function(source)
@@ -329,48 +274,6 @@ lib.addCommand('setgang', {
 
     local success, errorResult = player.Functions.SetGang(args[locale('command.setgang.params.gang.name')], args[locale('command.setgang.params.grade.name')] or 0)
     assert(success, json.encode(errorResult))
-end)
-
-lib.addCommand('ooc', {
-    help = locale('command.ooc.help')
-}, function(source, args)
-    local message = table.concat(args, ' ')
-    local players = GetPlayers()
-    local player = GetPlayer(source)
-    if not player then return end
-
-    local playerCoords = GetEntityCoords(GetPlayerPed(source))
-    for _, v in pairs(players) do
-        if v == source then
-            TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
-                color = { 0, 0, 255},
-                multiline = true,
-                args = {('OOC | %s'):format(GetPlayerName(source)), message}
-            })
-        elseif #(playerCoords - GetEntityCoords(GetPlayerPed(v))) < 20.0 then
-            TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
-                color = { 0, 0, 255},
-                multiline = true,
-                args = {('OOC | %s'):format(GetPlayerName(source)), message}
-            })
-        elseif IsPlayerAceAllowed(v --[[@as string]], 'admin') then
-            if IsOptin(v --[[@as Source]]) then
-                TriggerClientEvent('chat:addMessage', v --[[@as Source]], {
-                    color = { 0, 0, 255},
-                    multiline = true,
-                    args = {('Proximity OOC | %s'):format(GetPlayerName(source)), message}
-                })
-                logger.log({
-                    source = 'qbx_core',
-                    webhook  = 'ooc',
-                    event = 'OOC',
-                    color = 'white',
-                    tags = config.logging.role,
-                    message = ('**%s** (CitizenID: %s | ID: %s) **Message:** %s'):format(GetPlayerName(source), player.PlayerData.citizenid, source, message)
-                })
-            end
-        end
-    end
 end)
 
 lib.addCommand('me', {

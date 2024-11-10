@@ -1,3 +1,5 @@
+-- TODO: that whole thing sucks tbh
+
 ---A persisted vehicle will respawn when deleted. Only works for player owned vehicles.
 ---Vehicles spawned using lib are automatically persisted
 ---@param vehicle number
@@ -15,7 +17,7 @@ end
 
 exports('DisablePersistence', DisablePersistence)
 
-if GetConvar('qbx:enableVehiclePersistence', 'false') == 'false' then return end
+if GetConvar('ybox:enableVehiclePersistence', 'false') == 'false' then return end
 
 assert(lib.checkDependency('qbx_vehicles', '1.4.1', true))
 
@@ -98,6 +100,7 @@ end
 
 AddEventHandler('entityRemoved', function(entity)
     if not Entity(entity).state.persisted then return end
+    local sessionId = Entity(entity).state.sessionId
     local coords = GetEntityCoords(entity)
     local heading = GetEntityHeading(entity)
     local bucket = GetEntityRoutingBucket(entity)
@@ -106,7 +109,6 @@ AddEventHandler('entityRemoved', function(entity)
     local vehicleId = getVehicleId(entity)
     if not vehicleId then return end
 
-    local sessionId = Entity(entity).state.sessionId
     local playerVehicle = exports.qbx_vehicles:GetPlayerVehicle(vehicleId)
 
     if DoesEntityExist(entity) then

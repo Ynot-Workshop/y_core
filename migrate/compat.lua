@@ -75,7 +75,6 @@ return {
                 if not ItemList[item.name] then
                     fileSize += 1
 
-                    ---@todo cry
                     local itemStr = itemFormat:format(item.name, item.label, item.weight, item.stack, item.close, item.description or 'nil', item.hunger or 'nil', item.thirst or 'nil', item.stress or 'nil', item.image or 'nil')
                     -- temporary solution for nil values
                     itemStr = itemStr:gsub('[%s]-[%w]+ = "?nil"?,?', '')

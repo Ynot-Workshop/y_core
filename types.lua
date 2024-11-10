@@ -2,6 +2,8 @@
 
 ---@alias NotificationPosition 'top' | 'top-right' | 'top-left' | 'bottom' | 'bottom-right' | 'bottom-left' | 'center-right' | 'center-left'
 ---@alias NotificationType 'info' | 'warning' | 'success' | 'error'
+---@alias PlayerIdentifier 'username' | 'license' | 'license2' | 'fivem' | 'discord'
+---@alias Source integer
 
 ---@class ErrorResult
 ---@field code string
@@ -13,7 +15,6 @@
 ---@field nationality string
 ---@field gender number
 ---@field birthdate string
----@field cid integer
 
 ---@class SubQueue : SubQueueConfig
 ---@field positions table<string, number> Player license to sub-queue position map.
@@ -58,36 +59,7 @@
 ---@field Save fun()
 ---@field Logout fun()
 
----@class GroupData
----@field label string
-
----@class JobData : GroupData
----@field type? string
----@field defaultDuty boolean
----@field offDutyPay boolean
-
----@class GangData : GroupData
-
----@class GradeData
----@field name string
----@field isboss? boolean
----@field bankAuth? boolean
-
----@class JobGradeData : GradeData
----@field payment number
-
----@class GangGradeData : GradeData
-
----@class Job : JobData
----@field grades table<integer, JobGradeData>
-
----@class Gang : GangData
----@field grades table<integer, GangGradeData>
-
 ---@class StorageFunctions
----@field insertBan fun(request: InsertBanRequest)
----@field fetchBan fun(request: GetBanRequest): BanEntity?
----@field deleteBan fun(request: GetBanRequest)
 ---@field upsertPlayerEntity fun(request: UpsertPlayerRequest)
 ---@field fetchPlayerSkin fun(citizenId: string): PlayerSkin?
 ---@field fetchPlayerEntity fun(citizenId: string): PlayerEntity?
@@ -95,29 +67,6 @@
 ---@field fetchAllPlayerEntities fun(license2: string, license?: string): PlayerEntity[]
 ---@field deletePlayer fun(citizenId: string): boolean success
 ---@field fetchIsUnique fun(type: UniqueIdType, value: string|number): boolean
----@field addPlayerToJob fun(citizenid: string, group: string, grade: integer)
----@field addPlayerToGang fun(citizenid: string, group: string, grade: integer)
----@field fetchPlayerGroups fun(citizenid: string): table<string, integer>, table<string, integer> jobs, gangs
----@field removePlayerFromJob fun(citizenid: string, group: string)
----@field removePlayerFromGang fun(citizenid: string, group: string)
-
----@class InsertBanRequest
----@field name string
----@field license? string
----@field discordId? string
----@field ip? string
----@field reason string
----@field bannedBy string
----@field expiration integer epoch second that the ban will expire
-
----@class GetBanRequest
----@field license? string
----@field discordId? string
----@field ip? string
-
----@class BanEntity
----@field expire integer epoch second that the ban will expire
----@field reason string
 
 ---@class UpsertPlayerRequest
 ---@field playerEntity PlayerEntity
@@ -133,7 +82,6 @@
 ---@field gang? PlayerGang
 ---@field position vector4
 ---@field metadata PlayerMetadata
----@field cid integer
 ---@field lastLoggedOut integer
 ---@field items table deprecated
 
@@ -151,12 +99,7 @@
 ---@field lastname string
 ---@field birthdate string
 ---@field nationality string
----@field cid integer
 ---@field gender integer
----@field backstory string
----@field phone string
----@field account string
----@field card number
 
 ---@class PlayerMetadata
 ---@field health number
@@ -168,29 +111,21 @@
 ---@field inlaststand boolean
 ---@field ishandcuffed boolean
 ---@field tracker boolean
----@field injail number time in minutes
----@field jailitems table TODO: expand
----@field status table TODO: expand
----@field phone {background: any, profilepicture: any} TODO: figure out more specific types
 ---@field bloodtype BloodType
 ---@field dealerrep number
 ---@field craftingrep number
 ---@field attachmentcraftingrep number
----@field currentapartment? integer apartmentId
 ---@field jobrep {tow: number, trucker: number, taxi: number, hotdog: number}
 ---@field callsign string
 ---@field fingerprint string
----@field walletid string
----@field criminalrecord {hasRecord: boolean, date?: table} TODO: date is os.date(), create better type than table
 ---@field licences {id: boolean, driver: boolean, weapon: boolean}
----@field inside {house?: any, apartment: {apartmentType?: any, apartmentId?: integer}} TODO: expand
----@field phonedata {SerialNumber: string, InstalledApps: table} TODO: expand
 ---@field [string] any
 
 ---@class PlayerJob
 ---@field name string
 ---@field label string
 ---@field payment number
+---@field offDutyPay number
 ---@field type? string
 ---@field onduty boolean
 ---@field isboss boolean
@@ -206,7 +141,7 @@
 ---@field citizenid string
 ---@field model string
 ---@field skin string
----@field active integer
+---@field active integer -- TODO: that's dumb as hell, changing a skin temporarily, Ynot but maybe just don't save it in db.. (this active thing isn't even ever used to go back to your old skin...)
 
 ---@class Item
 ---@field name string

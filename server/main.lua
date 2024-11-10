@@ -1,11 +1,11 @@
-lib.versionCheck('Qbox-project/qbx_core')
+lib.versionCheck('Ybox-project/y_core')
 local startupErrors, errorMessage
 if not lib.checkDependency('ox_lib', '3.20.0', true) then
     startupErrors, errorMessage = true, 'ox_lib version 3.20.0 or higher is required'
 elseif not lib.checkDependency('ox_inventory', '2.42.1', true) then
     startupErrors, errorMessage = true, 'ox_inventory version 2.42.1 or higher is required'
-elseif GetConvar('inventory:framework', '') ~= 'qbx' then
-    startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
+elseif GetConvar('inventory:framework', '') ~= 'ybox' then
+    startupErrors, errorMessage = true, 'inventory:framework must be set to "ybox" in order to use y_core'
 elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
     startupErrors, errorMessage = true, 'OneSync Infinity is not enabled. You can do so in txAdmin settings or add +set onesync on to your server startup command line'
 end
@@ -19,13 +19,12 @@ if startupErrors then
 end
 
 ---@type 'strict'|'relaxed'|'inactive'
-local bucketLockDownMode = GetConvar('qbx:bucketlockdownmode', 'inactive')
+local bucketLockDownMode = GetConvar('ybox:bucketlockdownmode', 'inactive')
 SetRoutingBucketEntityLockdownMode(0, bucketLockDownMode)
 
 QBX = {}
 QBX.Shared = require 'shared.main'
 
----@alias Source integer
 ---@type table<Source, Player>
 QBX.Players = {}
 GlobalState.PlayerCount = 0
@@ -47,6 +46,7 @@ local currentSessionId = 0
 ---If the entity already has a sessionId, this will return it rather than overwrite.
 ---@param entity number
 ---@return integer sessionId
+---TODO: SessionId is the dumbest name ever for what is essentially a glorified netId
 local function createSessionId(entity)
     local existingSessionId = Entity(entity).state.sessionId
     if existingSessionId then
@@ -114,23 +114,7 @@ exports('GetVehiclesByHash', GetVehiclesByHash)
 
 ---@return table<string, Vehicle[]>
 function GetVehiclesByCategory()
-	return qbx.table.mapBySubfield(QBX.Shared.Vehicles, 'category')
+    return qbx.table.mapBySubfield(QBX.Shared.Vehicles, 'category')
 end
 
 exports('GetVehiclesByCategory', GetVehiclesByCategory)
-
----@return table<number, Weapon>
-function GetWeapons()
-    return QBX.Shared.Weapons
-end
-
-exports('GetWeapons', GetWeapons)
-
----@deprecated
----@return table<string, vector4>
-function GetLocations()
-    return QBX.Shared.Locations
-end
-
----@diagnostic disable-next-line: deprecated
-exports('GetLocations', GetLocations)

@@ -1,3 +1,5 @@
+--TODO: module
+
 local statusInterval = require 'config.client'.statusIntervalSeconds
 local playerState = LocalPlayer.state
 

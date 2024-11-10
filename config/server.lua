@@ -2,14 +2,17 @@ return {
     updateInterval = 5, -- how often to update player data in minutes
 
     money = {
-        ---@alias MoneyType 'cash' | 'bank' | 'crypto'
-        ---@alias Money {cash: number, bank: number, crypto: number}
+        ---@alias MoneyType 'cash' | 'bank'
+        ---@alias Money {cash: number, bank: number}
         ---@type Money
-        moneyTypes = { cash = 500, bank = 5000, crypto = 0 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
+        moneyTypes = { cash = 500, bank = 5000 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
         dontAllowMinus = { 'cash', 'crypto' }, -- Money that is not allowed going in minus
         paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
+        -- TODO: WE LIVE IN A SOCIETY (it's not ESX who the fuck actually says society)
         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
     },
+
+    ForceJobDefaultDutyAtLogin = true,
 
     player = {
         hungerRate = 4.2, -- Rate at which hunger goes down.
@@ -20,8 +23,9 @@ return {
             'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-',
         },
 
-        ---@alias UniqueIdType 'citizenid' | 'AccountNumber' | 'PhoneNumber' | 'FingerId' | 'WalletId' | 'SerialNumber'
+        ---@alias UniqueIdType 'citizenid' | 'AccountNumber' | 'PhoneNumber' | 'FingerId' | 'SerialNumber'
         ---@type table<UniqueIdType, {valueFunction: function}>
+        --- TODO: Citizen ID & SerialNumber should not be generated like that
         identifierTypes = {
             citizenid = {
                 valueFunction = function()
@@ -43,11 +47,6 @@ return {
                     return lib.string.random('...............')
                 end,
             },
-            WalletId = {
-                valueFunction = function()
-                    return 'QB-' .. math.random(11111111, 99999999)
-                end,
-            },
             SerialNumber = {
                 valueFunction = function()
                     return math.random(11111111, 99999999)
@@ -59,6 +58,7 @@ return {
     ---@alias TableName string
     ---@alias ColumnName string
     ---@type [TableName, ColumnName][]
+    ---TODO: remove that whole thing, a good db just cascades
     characterDataTables = {
         {'properties', 'owner'},
         {'bank_accounts_new', 'id'},
@@ -66,7 +66,6 @@ return {
         {'player_mails', 'citizenid'},
         {'player_outfits', 'citizenid'},
         {'player_vehicles', 'citizenid'},
-        {'player_groups', 'citizenid'},
         {'players', 'citizenid'},
         {'npwd_calls', 'identifier'},
         {'npwd_darkchat_channel_members', 'user_identifier'},
@@ -84,7 +83,7 @@ return {
         closed = false, -- Set server closed (no one can join except people with ace permission 'qbadmin.join')
         closedReason = 'Server Closed', -- Reason message to display when people can't join the server
         whitelist = false, -- Enable or disable whitelist on the server
-        whitelistPermission = 'admin', -- Permission that's able to enter the server when the whitelist is on
+        whitelistPermission = 'admin', -- Permission that's able to enter the server when the server is closed
         discord = '', -- Discord invite link
         checkDuplicateLicense = true, -- Check for duplicate rockstar license on join
         ---@deprecated use cfg ACE system instead
@@ -99,22 +98,16 @@ return {
         defaultNumberOfCharacters = 3, -- Define maximum amount of default characters (maximum 3 characters defined by default)
     },
 
-    -- this configuration is for core events only. putting other webhooks here will have no effect
-    logging = {
-        webhook = {
-            ['default'] = nil, -- default
-            ['joinleave'] = nil, -- default
-            ['ooc'] = nil, -- default
-            ['anticheat'] = nil, -- default
-            ['playermoney'] = nil, -- default
-        },
-        role = {} -- Role to tag for high priority logs. Roles use <@%roleid> and users/channels are <@userid/channelid>
+    logger = {
+        useFMSDK = false -- Wheter to use Fivemanage's SDK for logging or ox_lib's logger
     },
 
+    -- TODO: exports are a no no, enforce a base for resources to build on top of instead
     giveVehicleKeys = function(src, plate, vehicle)
         return exports.qbx_vehiclekeys:GiveKeys(src, vehicle)
     end,
 
+    -- TODO: 1: NP banking no thanks, 2: exports are a no no 3: construct a base
     getSocietyAccount = function(accountName)
         return exports['Renewed-Banking']:getAccountMoney(accountName)
     end,

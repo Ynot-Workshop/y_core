@@ -1,6 +1,6 @@
 local serverConfig = require 'config.server'.server
-local loggingConfig = require 'config.server'.logging
 local serverName = require 'config.shared'.serverName
+local storage = require 'server.storage.main'
 local logger = require 'modules.logger'
 local queue = require 'server.queue'
 
@@ -42,24 +42,45 @@ AddEventHandler('playerDropped', function(reason)
     local player = QBX.Players[src]
     player.PlayerData.lastLoggedOut = os.time()
     logger.log({
-        source = 'qbx_core',
-        webhook = loggingConfig.webhook['joinleave'],
+        source = player.PlayerData.citizenid,
         event = 'Dropped',
-        color = 'red',
         message = ('**%s** (%s) left...\n **Reason:** %s'):format(GetPlayerName(src), player.PlayerData.license, reason),
+        metadata = {
+            license = player.PlayerData.license,
+            reason = reason
+        }
     })
     player.Functions.Save()
     QBX.Player_Buckets[player.PlayerData.license] = nil
     QBX.Players[src] = nil
 end)
 
+---@param source Source|string
+---@return table<string, string>
+local function getIdentifiers(source)
+    local identifiers = {}
+
+    for i = 0, GetNumPlayerIdentifiers(source --[[@as string]]) - 1 do
+        local identifier = GetPlayerIdentifier(source --[[@as string]], i)
+        local prefix = identifier:match('([^:]+)')
+
+        if prefix ~= 'ip' then
+            identifiers[prefix] = identifier
+        end
+    end
+
+    return identifiers
+end
+
 -- Player Connecting
 ---@param name string
 ---@param _ any
 ---@param deferrals Deferrals
+--- TODO: needs testing
 local function onPlayerConnecting(name, _, deferrals)
     local src = source --[[@as string]]
     local license = GetPlayerIdentifierByType(src, 'license2') or GetPlayerIdentifierByType(src, 'license')
+    local userId = storage.fetchUserByIdentifier(license)
     deferrals.defer()
 
     -- Mandatory wait
@@ -77,71 +98,39 @@ local function onPlayerConnecting(name, _, deferrals)
         deferrals.done(locale('error.duplicate_license'))
     end
 
-    local databaseTime = os.clock()
-    local databasePromise = promise.new()
+    if not userId then
+        local identifiers = getIdentifiers(src)
 
-    -- conduct database-dependant checks
-    CreateThread(function()
-        deferrals.update(locale('info.checking_ban', name))
-        local success, err = pcall(function()
-            local isBanned, Reason = IsPlayerBanned(src --[[@as Source]])
-            if isBanned then
-                Wait(0) -- Mandatory wait
-                deferrals.done(Reason)
-            end
-        end)
+        identifiers.username = name
 
-        if serverConfig.whitelist and success then
-            deferrals.update(locale('info.checking_whitelisted', name))
-            success, err = pcall(function()
-                if not IsWhitelisted(src --[[@as Source]]) then
-                    Wait(0) -- Mandatory wait
-                    deferrals.done(locale('error.not_whitelisted'))
-                end
-            end)
-        end
-
-        if not success then
-            databasePromise:reject(err)
-        end
-        databasePromise:resolve()
-    end)
-
-    local onError = function(err)
-        deferrals.done(locale('error.connecting_error'))
-        lib.print.error(err)
+        storage.createUser(identifiers)
     end
 
-    -- wait for database to finish
-    databasePromise:next(function()
-        deferrals.update(locale('info.join_server', name, serverName))
+    deferrals.update(locale('info.join_server', name, serverName))
 
-        -- Mandatory wait
-        Wait(0)
+    -- Mandatory wait
+    Wait(0)
 
-        if queue then
-            queue.awaitPlayerQueue(src --[[@as Source]], license, deferrals)
-        else
-            deferrals.done()
-        end
-    end, onError):next(function() end, onError)
-
-    -- if conducting db checks for too long then raise error
-    while databasePromise.state == 0 do
-        if os.clock() - databaseTime > 30 then
-            deferrals.done(locale('error.connecting_database_timeout'))
-            error(locale('error.connecting_database_timeout'))
-            break
-        end
-        Wait(1000)
+    if queue then
+        queue.awaitPlayerQueue(src --[[@as Source]], license, deferrals)
+    else
+        deferrals.done()
     end
+
 
     -- Add any additional defferals you may need!
 end
 
 AddEventHandler('playerConnecting', onPlayerConnecting)
 
--- New method for checking if logged in across all scripts (optional)
+AddEventHandler('onResourceStart', function(resource)
+    if resource ~= cache.resource then return end
+
+    --TODO: don't do that ffs
+    storage.createUsersTable()
+end)
+
+-- Allows for checking if a player is logged in across all scripts (optional)
 -- `if LocalPlayer.state.isLoggedIn then` for the client side
 -- `if Player(source).state.isLoggedIn then` for the server side
 RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
@@ -182,7 +171,7 @@ RegisterNetEvent('QBCore:Server:OpenServer', function()
 end)
 
 -- Player
-
+--TODO: group module
 RegisterNetEvent('QBCore:ToggleDuty', function()
     local src = source --[[@as Source]]
     local player = GetPlayer(src)
@@ -194,33 +183,4 @@ RegisterNetEvent('QBCore:ToggleDuty', function()
         player.Functions.SetJobDuty(true)
         Notify(src, locale('info.on_duty'))
     end
-end)
-
----Syncs the player's hunger, thirst, and stress levels with the statebags
----@param bagName string
----@param meta 'hunger' | 'thirst' | 'stress'
----@param value number
-local function playerStateBagCheck(bagName, meta, value)
-    if not value then return end
-    local plySrc = GetPlayerFromStateBagName(bagName)
-    if not plySrc then return end
-    local player = QBX.Players[plySrc]
-    if not player then return end
-    if player.PlayerData.metadata[meta] == value then return end
-    player.Functions.SetMetaData(meta, value)
-end
-
- ---@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler('hunger', nil, function(bagName, _, value)
-    playerStateBagCheck(bagName, 'hunger', value)
-end)
-
- ---@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler('thirst', nil, function(bagName, _, value)
-    playerStateBagCheck(bagName, 'thirst', value)
-end)
-
- ---@diagnostic disable-next-line: param-type-mismatch
-AddStateBagChangeHandler('stress', nil, function(bagName, _, value)
-    playerStateBagCheck(bagName, 'stress', value)
 end)

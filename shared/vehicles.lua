@@ -1,4 +1,5 @@
 ---@type table<string, Vehicle>
+---TODO: move to data, maybe add the weird ahh vehicle type for the serverside creation native
 return {
     adder = {
         name = 'Adder',

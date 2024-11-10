@@ -1,6 +1,9 @@
 Locale = {}
 Locale.__index = Locale
 
+lib.print.warn('This resource is still using the deprecated qb_core locales!')
+lib.print.warn('If you are the author, please update to use ox_lib\'s locale module. If you are not, please tell them to update!')
+
 ---Translate a key
 ---@param phrase string
 ---@param subs table
