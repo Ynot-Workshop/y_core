@@ -40,8 +40,6 @@ QBX.UsableItems = {}
 local vehicleClasses
 local vehicleClassesPromise
 
-local currentSessionId = 0
-
 ---Caches the vehicle classes the first time this is called by getting the data from a random client.
 ---Throws an error if there is no cache and no client is connected to get the data from.
 ---@param model number
