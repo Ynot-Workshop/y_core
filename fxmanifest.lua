@@ -21,7 +21,6 @@ client_scripts {
     'client/events.lua',
     'client/character.lua',
     'client/discord.lua',
-    'client/vehicle-persistence.lua',
 }
 
 server_scripts {
@@ -34,7 +33,6 @@ server_scripts {
     'server/commands.lua',
     'server/loops.lua',
     'server/character.lua',
-    'server/vehicle-persistence.lua',
 }
 
 files {

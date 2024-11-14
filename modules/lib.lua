@@ -316,7 +316,7 @@ if isServer then
         end
 
         local netId = NetworkGetNetworkIdFromEntity(veh)
-        exports.qbx_core:EnablePersistence(veh)
+        SetEntityOrphanMode(veh, 2)
         return netId, veh
     end
 else
@@ -325,8 +325,8 @@ else
     ---@field scale? integer default: `0.35`
     ---@field font? integer default: `4`
     ---@field color? vector4 rgba, white by default
-    ---@field enableDropShadow? boolean 
-    ---@field enableOutline? boolean 
+    ---@field enableDropShadow? boolean
+    ---@field enableOutline? boolean
 
     ---@class LibDrawText2DParams : LibDrawTextParams
     ---@field coords vector2

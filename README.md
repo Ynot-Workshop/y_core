@@ -26,7 +26,6 @@ Other ***goals*** include:
         - [ ] crew
         - [ ] weapon
         - [ ] vehicle
-        - [ ] vehicle persistence
         - [ ] reputation
 
 - [ ] New Database Structure
@@ -43,7 +42,6 @@ Other ***goals*** include:
 - Built-in multicharacter
 - Built-in queue system for full servers
 - Logger system
-- Persistent player vehicles (not what it sounds like since the qbox team is incompetent)
 - Exports (a lot of them)
 
 ## Modules
