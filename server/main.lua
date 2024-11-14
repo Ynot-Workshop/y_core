@@ -42,24 +42,6 @@ local vehicleClassesPromise
 
 local currentSessionId = 0
 
----Sets a unique sessionId statebag on the entity.
----If the entity already has a sessionId, this will return it rather than overwrite.
----@param entity number
----@return integer sessionId
----TODO: SessionId is the dumbest name ever for what is essentially a glorified netId
-local function createSessionId(entity)
-    local existingSessionId = Entity(entity).state.sessionId
-    if existingSessionId then
-        return existingSessionId
-    end
-    currentSessionId += 1
-    local sessionId = currentSessionId
-    Entity(entity).state:set('sessionId', sessionId, true)
-    return sessionId
-end
-
-exports('CreateSessionId', createSessionId)
-
 ---Caches the vehicle classes the first time this is called by getting the data from a random client.
 ---Throws an error if there is no cache and no client is connected to get the data from.
 ---@param model number
