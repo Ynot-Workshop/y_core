@@ -99,11 +99,13 @@ end
 exports('GetVehicleClass', GetVehicleClass)
 
 ---@return table<string, Vehicle>
-function GetVehiclesByName()
+function GetVehiclesByModel()
     return QBX.Shared.Vehicles
 end
 
-exports('GetVehiclesByName', GetVehiclesByName)
+---@deprecated Use GetVehiclesByModel instead
+exports('GetVehiclesByName', GetVehiclesByModel)
+exports('GetVehiclesByModel', GetVehiclesByModel)
 
 ---@return table<number, Vehicle>
 function GetVehiclesByHash()
