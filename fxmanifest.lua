@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 name 'y_core'
-description 'The core resource for the Ybox Framework'
-repository 'https://github.com/Ybox-project/y_core'
+description "The core resource from Ynot's Workshop"
+repository 'https://github.com/Ynot-workshop/y_core'
 version '1.0.0'
 
 ox_lib 'locale'

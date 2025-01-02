@@ -1,6 +1,6 @@
 # y_core
 
-y_core is the core for the Ybox framework, aimed to be a successor to qb-core, and continuing the development of a solid foundation for building easy-to-use, performant, and secure server resources.
+y_core is the core from Ynot's Workshop, aimed to be a successor to qbx_core, and continuing the development of a solid foundation for building easy-to-use, performant, and secure server resources.
 
 The ***main goal*** is to promote better practices, so of course, not being backwards compatible is a feature, not a bug.
 *(if you care that your 2021 qbus resource still works *(that's what backwards compatibility mean btw)*, the Qbox team will love you!)*

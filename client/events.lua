@@ -12,7 +12,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         NetworkEndTutorialSession()
     end
 
-    local motd = GetConvar('ybox:motd', '')
+    local motd = GetConvar('y:motd', '')
     if motd ~= '' then
         exports.chat:addMessage({ template = motd })
     end

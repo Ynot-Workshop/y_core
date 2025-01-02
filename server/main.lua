@@ -1,11 +1,11 @@
-lib.versionCheck('Ybox-project/y_core')
+lib.versionCheck('Ynot-workshop/y_core')
 local startupErrors, errorMessage
 if not lib.checkDependency('ox_lib', '3.20.0', true) then
     startupErrors, errorMessage = true, 'ox_lib version 3.20.0 or higher is required'
 elseif not lib.checkDependency('ox_inventory', '2.42.1', true) then
     startupErrors, errorMessage = true, 'ox_inventory version 2.42.1 or higher is required'
-elseif GetConvar('inventory:framework', '') ~= 'ybox' then
-    startupErrors, errorMessage = true, 'inventory:framework must be set to "ybox" in order to use y_core'
+elseif GetConvar('inventory:framework', '') ~= 'y' then
+    startupErrors, errorMessage = true, 'inventory:framework must be set to "y" in order to use y_core'
 elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
     startupErrors, errorMessage = true, 'OneSync Infinity is not enabled. You can do so in txAdmin settings or add +set onesync on to your server startup command line'
 end
@@ -19,7 +19,7 @@ if startupErrors then
 end
 
 ---@type 'strict'|'relaxed'|'inactive'
-local bucketLockDownMode = GetConvar('ybox:bucketlockdownmode', 'inactive')
+local bucketLockDownMode = GetConvar('y:bucketlockdownmode', 'inactive')
 SetRoutingBucketEntityLockdownMode(0, bucketLockDownMode)
 
 QBX = {}

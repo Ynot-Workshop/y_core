@@ -1,4 +1,4 @@
-if GetConvar('ybox:enablequeue', 'true') == 'false' then return false end
+if GetConvar('y:enablequeue', 'true') == 'false' then return false end
 
 -- Disable hardcap because it kicks the player when the server is full
 

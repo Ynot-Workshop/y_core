@@ -1,6 +1,6 @@
 --TODO: idk do something with this?
-local acknowledged = GetConvar('ybox:acknowledge', 'false') == 'true'
-local messagesUrl = GetConvar('ybox:serviceMessagesUrl', '')
+local acknowledged = GetConvar('y:acknowledge', 'false') == 'true'
+local messagesUrl = GetConvar('y:serviceMessagesUrl', '')
 local resourceVersion = GetResourceMetadata(cache.resource, 'version', 0)
 
 ---@param str string
@@ -59,8 +59,8 @@ CreateThread(function()
 
     if not acknowledged then
         messages[#messages + 1] = [[^7
-^4Welcome to ^3Ybox^4!
-To turn this message off, add ^3set ybox:acknowledge true^4 to your cfg files.^7]]
+^4Welcome!
+To turn this message off, add ^3set y:acknowledge true^4 to your cfg files.^7]]
     end
 
     local requestPromise = promise:new()
@@ -78,7 +78,7 @@ To turn this message off, add ^3set ybox:acknowledge true^4 to your cfg files.^7
             if type(message) == 'table' and message.content and isResourceVersion(message.version) then
                 if not hasServiceMessage then
                     hasServiceMessage = true
-                    messages[#messages + 1] = '\n^5Ybox service messages:^7'
+                    messages[#messages + 1] = '\n^5Ynot\'s service messages:^7'
                 end
 
                 local content = validateContent(message.content)
