@@ -27,6 +27,8 @@ Other ***goals*** include:
         - [ ] weapon
         - [ ] vehicle
         - [ ] reputation
+        - [ ] bucket management
+        - [ ] dynamic character permission 
 
 - [ ] New Database Structure
 - [ ] New group system
